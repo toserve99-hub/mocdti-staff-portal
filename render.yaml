@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: mocdti-staff-portal
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: {name: staff-db, property: connectionString}
+      - key: SECRET_KEY
+        generateValue: true
+      - {key: ADMIN_EMAIL, sync: false}      # first HR/Admin login email
+      - {key: ADMIN_PASSWORD, sync: false}   # temporary; must be changed at first sign-in
+databases:
+  - name: staff-db
+    plan: basic-256mb
