@@ -10,7 +10,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__, static_folder="static")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.config.update(
-    SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"].replace("postgres://", "postgresql://", 1),
+    SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"].replace("postgres://", "postgresql://", 1).replace("postgresql://", "postgresql+psycopg2://", 1),
     SECRET_KEY=os.environ["SECRET_KEY"],
     SESSION_COOKIE_SECURE=True, SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax",
     PERMANENT_SESSION_LIFETIME=8 * 3600,
