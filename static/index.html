@@ -1,0 +1,3165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoCDTI Staff Establishment Register</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy-deep:#0a1f35;
+    --navy:#0f2c4c;
+    --navy-light:#1c4370;
+    --gold:#c9a961;
+    --gold-bright:#dcbf7c;
+    --bg:#f6f4ee;
+    --card:#ffffff;
+    --ink:#1e2733;
+    --slate:#5a6472;
+    --line:#e2dfd4;
+    --danger:#a6402f;
+    --success:#2f6b52;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Source Sans 3","Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  h1,h2,h3,.serif{
+    font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  }
+  ::selection{background:var(--gold-bright);}
+
+  /* ===== Header ===== */
+  header.masthead{
+    background:linear-gradient(180deg,var(--navy) 0%,var(--navy-deep) 100%);
+    color:#f4f1e8;
+    padding:28px 40px 22px;
+    position:relative;
+    border-bottom:3px solid var(--gold);
+  }
+  header.masthead::after{
+    content:"";
+    position:absolute;
+    left:40px;right:40px;bottom:-3px;
+    height:1px;
+  }
+  .masthead-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .masthead-eyebrow{
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--gold-bright);
+    margin:0 0 6px;
+    font-weight:600;
+  }
+  .masthead-title{
+    font-size:26px;
+    margin:0;
+    font-weight:600;
+    letter-spacing:.01em;
+  }
+  .masthead-sub{
+    margin:6px 0 0;
+    font-size:13px;
+    color:#c9d2de;
+    font-family:"Source Sans 3",sans-serif;
+  }
+  .masthead-seal{
+    text-align:right;
+    font-size:11px;
+    color:#c9d2de;
+    line-height:1.6;
+  }
+  .user-bar{
+    margin-top:8px;
+    font-size:11px;
+    color:#c9d2de;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  .user-bar button{
+    background:transparent;
+    border:1px solid rgba(255,255,255,.3);
+    color:#f4f1e8;
+    font-size:10.5px;
+    padding:3px 9px;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .user-bar button:hover{background:rgba(255,255,255,.1);}
+  .lock-overlay{
+    position:fixed;inset:0;
+    background:linear-gradient(180deg,var(--navy) 0%,var(--navy-deep) 100%);
+    display:flex;align-items:center;justify-content:center;
+    z-index:2000;
+    padding:20px;
+  }
+  .lock-overlay.hidden{display:none;}
+  .lock-card{
+    background:#fff;
+    border-radius:var(--radius);
+    border-top:4px solid var(--gold);
+    padding:34px 36px;
+    width:100%;
+    max-width:400px;
+  }
+  .lock-eyebrow{
+    letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;
+    color:var(--gold);font-weight:600;margin:0 0 6px;
+  }
+  .lock-title{font-size:19px;margin:0 0 12px;color:var(--navy-deep);}
+  .lock-sub{font-size:12.5px;color:var(--slate);margin:0 0 18px;line-height:1.5;}
+  .lock-error{font-size:12px;color:var(--danger);margin:10px 0 0;min-height:16px;}
+  .masthead-seal .num{
+    font-family:"Source Serif 4",serif;
+    font-size:22px;
+    color:var(--gold-bright);
+    display:block;
+  }
+
+  /* ===== Tabs ===== */
+  nav.tabs{
+    display:flex;
+    background:var(--navy-deep);
+    padding:0 40px;
+    gap:2px;
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    background:transparent;
+    border:none;
+    color:#a9b7c8;
+    font-family:"Source Sans 3",sans-serif;
+    font-size:13.5px;
+    letter-spacing:.03em;
+    padding:13px 18px;
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.tabs button:hover{color:#f4f1e8;}
+  nav.tabs button.active{
+    color:#f4f1e8;
+    border-bottom:3px solid var(--gold);
+    font-weight:600;
+  }
+
+  main{
+    max-width:1280px;
+    margin:0 auto;
+    padding:32px 40px 80px;
+  }
+  section.view{display:none;}
+  section.view.active{display:block;}
+
+  .panel-title{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .panel-title h2{
+    font-size:20px;
+    margin:0;
+    color:var(--navy-deep);
+  }
+  .panel-title .count-chip{
+    font-size:12px;
+    color:var(--slate);
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:4px 10px;
+    border-radius:var(--radius);
+  }
+
+  /* ===== Buttons ===== */
+  .btn{
+    font-family:"Source Sans 3",sans-serif;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:var(--radius);
+    border:1px solid var(--navy);
+    background:var(--navy);
+    color:#fff;
+    cursor:pointer;
+    letter-spacing:.02em;
+    transition:background .15s ease;
+  }
+  .btn:hover{background:var(--navy-light);}
+  .btn.secondary{background:transparent;color:var(--navy);border:1px solid var(--navy);}
+  .btn.secondary:hover{background:#eef1f5;}
+  .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy-deep);}
+  .btn.gold:hover{background:var(--gold-bright);}
+  .btn.danger{background:transparent;color:var(--danger);border:1px solid var(--danger);}
+  .btn.danger:hover{background:#fbeeec;}
+  .btn.small{padding:5px 10px;font-size:11.5px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* ===== Dashboard ===== */
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .stat-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-top:3px solid var(--gold);
+    padding:16px 18px;
+    border-radius:var(--radius);
+  }
+  .stat-card .val{
+    font-family:"Source Serif 4",serif;
+    font-size:30px;
+    color:var(--navy-deep);
+    display:block;
+    line-height:1.1;
+  }
+  .stat-card .lbl{
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    margin-top:4px;
+    display:block;
+  }
+  .chart-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .chart-grid.thirds{grid-template-columns:1fr 1fr 1fr;}
+  .chart-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .chart-card h3{
+    font-size:13.5px;
+    margin:0 0 12px;
+    color:var(--navy-deep);
+    font-weight:600;
+    font-family:"Source Sans 3",sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  .chart-card canvas{max-height:260px;}
+  .alert-list{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--danger);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    font-size:13px;
+  }
+  .alert-list.birthday{border-left:3px solid var(--gold);}
+  .alert-list h3{
+    font-size:13px;margin:0 0 8px;color:var(--danger);
+    text-transform:uppercase;letter-spacing:.05em;
+  }
+  .alert-list.birthday h3{color:#8a6d1f;}
+  .alert-list ul{margin:0;padding-left:18px;}
+  .alert-list li{margin-bottom:4px;color:var(--ink);}
+  .empty-note{color:var(--slate);font-size:13px;padding:10px 0;}
+  .breakdown-list{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+  }
+  .breakdown-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:3px 0;
+    color:var(--ink);
+  }
+  .breakdown-row .bd-label{color:var(--slate);}
+  .breakdown-row .bd-val{font-weight:600;color:var(--navy-deep);white-space:nowrap;}
+
+  /* ===== Filters ===== */
+  .filter-bar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    border-radius:var(--radius);
+    margin-bottom:16px;
+    align-items:flex-end;
+  }
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);font-weight:600;}
+  .field input,.field select,.field textarea{
+    font-family:"Source Sans 3",sans-serif;
+    font-size:13px;
+    padding:7px 9px;
+    border:1px solid #c9c3b3;
+    border-radius:var(--radius);
+    background:#fff;
+    color:var(--ink);
+    min-width:150px;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{
+    outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold);
+  }
+
+  /* ===== Table ===== */
+  .table-wrap{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow-x:auto;
+  }
+  table{border-collapse:collapse;width:100%;font-size:12.5px;}
+  thead th{
+    background:var(--navy-deep);
+    color:#f4f1e8;
+    text-align:left;
+    padding:10px 12px;
+    font-weight:600;
+    letter-spacing:.02em;
+    white-space:nowrap;
+    position:sticky;top:0;
+    cursor:pointer;
+  }
+  thead th:hover{background:var(--navy-light);}
+  tbody td{
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody tr:hover{background:#faf8f2;}
+  tbody tr:nth-child(even){background:#fbfaf6;}
+  tbody tr:nth-child(even):hover{background:#faf8f2;}
+  .tag{
+    display:inline-block;
+    font-size:10.5px;
+    padding:2px 8px;
+    border-radius:10px;
+    background:#eef1f5;
+    color:var(--navy);
+    font-weight:600;
+  }
+  .tag.f{background:#f6ecec;color:#8a3c30;}
+  .tag.m{background:#eaf0f6;color:var(--navy);}
+  .row-actions button{margin-right:4px;}
+
+  /* ===== Form ===== */
+  .form-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px 26px;
+    max-width:820px;
+  }
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px 20px;
+  }
+  .form-grid .full{grid-column:1/-1;}
+  .form-header-row{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+    margin-bottom:4px;
+  }
+  .photo-box-wrap{
+    flex-shrink:0;
+    width:130px;
+    text-align:center;
+  }
+  .photo-box{
+    width:130px;
+    height:160px;
+    border:1px solid #c9c3b3;
+    border-radius:var(--radius);
+    background:#faf9f5;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .photo-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .photo-placeholder{
+    color:var(--slate);
+    font-size:11px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .photo-placeholder::before{
+    content:"👤";
+    font-size:30px;
+    opacity:.35;
+  }
+  .photo-box-actions{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-top:8px;
+  }
+  .photo-box-actions .btn{width:100%;}
+  .photo-box-hint{
+    font-size:10.5px;
+    color:var(--slate);
+    margin-top:6px;
+    line-height:1.4;
+  }
+  .form-actions{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+    border-top:1px solid var(--line);
+    padding-top:18px;
+  }
+  .attach-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .attach-row:last-child{border-bottom:none;}
+  .attach-thumb{
+    width:34px;height:34px;
+    border-radius:var(--radius);
+    object-fit:cover;
+    border:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .attach-label{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    min-width:150px;
+  }
+  .attach-status{
+    font-size:11.5px;
+    color:var(--slate);
+    flex:1;
+    min-width:120px;
+  }
+  .attach-row .btn.small{white-space:nowrap;}
+
+  /* ===== Import ===== */
+  .import-box{
+    background:var(--card);
+    border:1px dashed #c9c3b3;
+    border-radius:var(--radius);
+    padding:30px;
+    text-align:center;
+    max-width:640px;
+  }
+  .import-box.drag{border-color:var(--gold);background:#fbf8f0;}
+  .import-log{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-top:16px;
+    font-size:12.5px;
+    max-width:640px;
+  }
+  .import-log ul{margin:6px 0 0;padding-left:18px;}
+  .ai-report{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-top:3px solid var(--gold);
+    border-radius:var(--radius);
+    padding:24px 28px;
+    max-width:900px;
+    margin-top:18px;
+  }
+  .ai-report h4{
+    font-family:"Source Serif 4",serif;
+    color:var(--navy-deep);
+    font-size:15px;
+    margin:20px 0 8px;
+  }
+  .ai-report h4:first-child{margin-top:0;}
+  .ai-report p{font-size:13.5px;line-height:1.65;color:var(--ink);margin:0 0 10px;}
+  .ai-report ul{font-size:13.5px;line-height:1.6;color:var(--ink);padding-left:20px;margin:0 0 10px;}
+  .ai-report .meta{font-size:11px;color:var(--slate);margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:12px;}
+  .ai-loading{font-size:13px;color:var(--slate);padding:20px 0;}
+  .ai-error{font-size:13px;color:var(--danger);padding:14px 0;}
+  .ai-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;max-width:900px;}
+  .ai-key-box{max-width:720px;margin-top:14px;}
+  .ai-key-toggle{
+    background:none;border:none;color:var(--navy);font-size:12px;font-weight:600;
+    cursor:pointer;padding:4px 0;text-decoration:underline;
+  }
+  .ai-key-panel{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin-top:8px;
+  }
+  .mapping-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12.5px;}
+  .mapping-table th,.mapping-table td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;}
+  .mapping-table select{width:100%;padding:5px;font-size:12px;}
+
+  .toast{
+    position:fixed;
+    bottom:24px;right:24px;
+    background:var(--navy-deep);
+    color:#f4f1e8;
+    padding:12px 18px;
+    border-left:3px solid var(--gold);
+    border-radius:var(--radius);
+    font-size:13px;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .2s ease, transform .2s ease;
+    pointer-events:none;
+    z-index:999;
+    max-width:340px;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  .modal-backdrop{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(10,20,35,.5);
+    z-index:998;
+    align-items:center;justify-content:center;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:#fff;
+    border-radius:var(--radius);
+    padding:24px 26px;
+    max-width:400px;
+    border-top:3px solid var(--danger);
+  }
+  .modal h3{margin:0 0 10px;font-size:16px;}
+  .modal p{font-size:13px;color:var(--slate);margin:0 0 18px;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+  footer.foot{
+    text-align:center;
+    font-size:11px;
+    color:var(--slate);
+    padding:20px;
+  }
+
+  @media (max-width:800px){
+    header.masthead,main,nav.tabs{padding-left:16px;padding-right:16px;}
+    .chart-grid,.chart-grid.thirds{grid-template-columns:1fr;}
+    .form-grid{grid-template-columns:1fr;}
+  }
+
+  /* ===== role-based visibility (server enforces; this just tidies the UI) ===== */
+  #lockOverlay,.ai-key-box{display:none!important;}
+  body:not(.can-edit) .tab-btn[data-view="add"],
+  body:not(.can-edit) #btnAddTraining,
+  body:not(.can-edit) [onclick^="openEditTraining"],
+  body:not(.can-edit) [onclick^="deleteTraining"],
+  body:not(.can-edit) [onclick^="openQuarantineModal"],
+  body:not(.can-edit) [onclick^="restoreFromQuarantine"],
+  body:not(.can-edit) #btnSave,body:not(.can-edit) #btnResetForm,
+  body:not(.can-edit) #photoBoxBtn,body:not(.can-edit) #photoBoxRemoveBtn{display:none!important;}
+  body:not(.can-edit) #view-add input,body:not(.can-edit) #view-add select,body:not(.can-edit) #view-add textarea{pointer-events:none;background:#f1efe8;}
+  body:not(.is-admin) .tab-btn[data-view="import"],
+  body:not(.is-admin) .tab-btn[data-view="ai"],
+  body:not(.is-admin) [onclick^="askDelete"],
+  body:not(.is-admin) [onclick^="deleteQuarantinedPermanently"]{display:none!important;}
+  #usersTable th,#usersTable td,#auditTable th,#auditTable td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+  body:not(.is-admin) .tab-btn[data-view="users"]{display:none!important;}
+</style>
+</head>
+<body>
+
+<div id="lockOverlay" class="lock-overlay">
+  <div class="lock-card">
+    <p class="lock-eyebrow">Ministry of Communication, Digital Technology and Innovations</p>
+    <h1 class="lock-title">Staff Establishment Register</h1>
+
+    <div id="lockSetupMode">
+      <p class="lock-sub">Set a password to protect this register. Data is encrypted using this password —
+        <strong>if you forget it, the data cannot be recovered by anyone, including Anthropic.</strong> Write it down and store it somewhere safe.</p>
+      <div class="field" style="margin-bottom:12px;">
+        <label>Create password</label>
+        <input type="password" id="setupPassword" autocomplete="new-password">
+      </div>
+      <div class="field" style="margin-bottom:12px;">
+        <label>Confirm password</label>
+        <input type="password" id="setupPasswordConfirm" autocomplete="new-password">
+      </div>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--slate);margin-bottom:14px;">
+        <input type="checkbox" id="setupAck" style="margin-top:3px;">
+        <span>I understand this password cannot be reset or recovered if forgotten, and that I am responsible for remembering it.</span>
+      </label>
+      <button class="btn gold" id="btnSetupPassword" style="width:100%;">Set Password &amp; Continue</button>
+      <p id="setupError" class="lock-error"></p>
+    </div>
+
+    <div id="lockUnlockMode" style="display:none;">
+      <p class="lock-sub">Enter your password to unlock the register.</p>
+      <div class="field" style="margin-bottom:14px;">
+        <label>Password</label>
+        <input type="password" id="unlockPassword" autocomplete="current-password">
+      </div>
+      <button class="btn gold" id="btnUnlock" style="width:100%;">Unlock</button>
+      <p id="unlockError" class="lock-error"></p>
+    </div>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="masthead-top">
+    <div>
+      <p class="masthead-eyebrow">Ministry of Communication, Digital Technology and Innovations</p>
+      <h1 class="masthead-title">Staff Establishment Register</h1>
+      <p class="masthead-sub">Directorates &amp; Agencies &middot; consolidated personnel records, query and analysis</p>
+    </div>
+    <div class="masthead-seal">
+      <span class="num" id="headcountBadge">0</span>
+      Staff on record
+      <div class="user-bar"><span id="userBarText"></span><button type="button" onclick="location.href='/change-password'">Change password</button><button type="button" onclick="location.href='/logout'">Sign out</button></div>
+    </div>
+  </div>
+</header>
+
+<div class="modal-backdrop" id="changePasswordModal">
+  <div class="modal" style="max-width:400px;">
+    <h3>Change Password</h3>
+    <div class="field" style="margin-bottom:10px;">
+      <label>Current password</label>
+      <input type="password" id="cpCurrent" autocomplete="current-password">
+    </div>
+    <div class="field" style="margin-bottom:10px;">
+      <label>New password</label>
+      <input type="password" id="cpNew" autocomplete="new-password">
+    </div>
+    <div class="field" style="margin-bottom:10px;">
+      <label>Confirm new password</label>
+      <input type="password" id="cpConfirm" autocomplete="new-password">
+    </div>
+    <p id="cpError" class="lock-error"></p>
+    <div class="modal-actions">
+      <button class="btn secondary" id="cpCancel">Cancel</button>
+      <button class="btn gold" id="cpSave">Save new password</button>
+    </div>
+  </div>
+</div>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-view="dashboard">Dashboard</button>
+  <button class="tab-btn" data-view="records">Staff Records</button>
+  <button class="tab-btn" data-view="quarantine">Quarantine</button>
+  <button class="tab-btn" data-view="add">Add / Edit Record</button>
+  <button class="tab-btn" data-view="training">Training Records</button>
+  <button class="tab-btn" data-view="import">Import &amp; Backup</button>
+  <button class="tab-btn" data-view="ai">AI Analysis Report</button>
+  <button class="tab-btn" data-view="users">Users &amp; Audit</button>
+</nav>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="panel-title">
+      <h2>Establishment Overview</h2>
+      <button class="btn secondary" id="btnPrintDashboard">Print / Download dashboard</button>
+    </div>
+    <div class="stat-row" id="statRow"></div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Staff by Directorate / Agency</h3>
+        <canvas id="chartByUnit"></canvas>
+        <div class="breakdown-list" id="breakdownUnit"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Staff by Sex</h3>
+        <canvas id="chartBySex"></canvas>
+        <div class="breakdown-list" id="breakdownSex"></div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Senior / Junior Staff</h3>
+        <canvas id="chartByCategory"></canvas>
+        <div class="breakdown-list" id="breakdownCategory"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Professional / Sub-Professional</h3>
+        <canvas id="chartByProfCategory"></canvas>
+        <div class="breakdown-list" id="breakdownProfCategory"></div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card"><h3>Staff by Grade</h3><canvas id="chartByGrade"></canvas></div>
+      <div class="chart-card"><h3>Employment Status</h3><canvas id="chartByStatus"></canvas></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card"><h3>Age Distribution</h3><canvas id="chartByAge"></canvas></div>
+      <div class="chart-card"><h3>Years at Current Organisation Distribution (since posting to Ministry)</h3><canvas id="chartByTenure"></canvas></div>
+    </div>
+    <div class="chart-grid" style="grid-template-columns:1fr;">
+      <div class="chart-card"><h3>Postings to Ministry by Year</h3><canvas id="chartByPostingYear"></canvas></div>
+    </div>
+
+    <div class="chart-grid" style="grid-template-columns:1fr 1fr;">
+        <h3>Due for retirement within 24 months (age 60)</h3>
+        <div id="retirementList" class="empty-note">No date of birth data available, or none due.</div>
+      </div>
+      <div class="alert-list birthday" id="birthdayAlert" style="margin-top:4px;">
+        <h3>Upcoming birthdays (next 30 days)</h3>
+        <div id="birthdayList" class="empty-note">No date of birth data available, or none upcoming.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECORDS -->
+  <section class="view" id="view-records">
+    <div class="panel-title">
+      <div style="display:flex;align-items:baseline;gap:10px;">
+        <h2>Staff Records</h2>
+        <span class="count-chip" id="recordCount">0 records</span>
+      </div>
+      <button class="btn secondary" id="btnPrintRecords">Print records</button>
+    </div>
+
+    <div class="filter-bar">
+      <div class="field">
+        <label>Search name</label>
+        <input type="text" id="fSearch" placeholder="Type a name...">
+      </div>
+      <div class="field">
+        <label>Directorate / Agency</label>
+        <select id="fUnit"><option value="">All</option></select>
+      </div>
+      <div class="field">
+        <label>Sex</label>
+        <select id="fSex"><option value="">All</option><option value="Male">Male</option><option value="Female">Female</option></select>
+      </div>
+      <div class="field">
+        <label>Grade</label>
+        <select id="fGrade"><option value="">All</option></select>
+      </div>
+      <div class="field">
+        <label>Employment status</label>
+        <select id="fStatus"><option value="">All</option></select>
+      </div>
+      <div class="field">
+        <label>Staff category</label>
+        <select id="fCategory"><option value="">All</option><option>Senior Staff</option><option>Junior Staff</option></select>
+      </div>
+      <div class="field">
+        <label>Professional category</label>
+        <select id="fProfCategory"><option value="">All</option><option>Professional</option><option>Sub-Professional</option></select>
+      </div>
+      <div class="field"><button class="btn secondary" id="btnClearFilters">Clear filters</button></div>
+      <div class="field" style="margin-left:auto;display:flex;flex-direction:row;gap:8px;">
+        <button class="btn gold" id="btnExport">Export to Excel</button>
+        <button class="btn secondary" id="btnExportHtml">Export to HTML</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="recordsTable">
+        <thead>
+          <tr>
+            <th data-key="name">Name</th>
+            <th data-key="sex">Sex</th>
+            <th data-key="maritalStatus">Marital Status</th>
+            <th data-key="grade">Grade</th>
+            <th data-key="unit">Directorate / Agency</th>
+            <th data-key="position">Position</th>
+            <th data-key="firstAppointment">First Appointed</th>
+            <th data-key="currentAppointment">Current Appointment</th>
+            <th data-key="datePosted">Posted to Ministry</th>
+            <th>Years at Current Organisation</th>
+            <th data-key="category">Category</th>
+            <th data-key="profCategory">Prof./Sub-Prof.</th>
+            <th data-key="qualifications">Qualifications</th>
+            <th data-key="status">Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="recordsBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- QUARANTINE -->
+  <section class="view" id="view-quarantine">
+    <div class="panel-title">
+      <h2>Quarantine</h2>
+      <span class="count-chip" id="quarantineCount">0 records</span>
+    </div>
+    <p style="font-size:12.5px;color:var(--slate);max-width:700px;margin-top:-8px;">
+      Staff who have exited the Ministry — posted out, retired, resigned, or deceased — go here instead of
+      being deleted. Their full record, history, and attachments are kept, they're excluded from the
+      Dashboard and Staff Records counts and charts, and they can be restored to the active roster at any
+      time (e.g. if someone posted out is later posted back).
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Sex</th><th>Grade</th><th>Former Directorate/Agency</th>
+            <th>Exit Type</th><th>Exit Date</th><th>Details</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="quarantineBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ADD / EDIT -->
+  <section class="view" id="view-add">
+    <div class="panel-title">
+      <h2 id="formHeading">Add Staff Record</h2>
+      <button class="btn secondary" id="btnPrintForm">Print form</button>
+    </div>
+    <div class="form-card">
+      <input type="hidden" id="editId">
+      <div class="form-header-row">
+        <div class="photo-box-wrap">
+          <div class="photo-box" id="photoBox">
+            <img id="photoBoxImg" alt="Passport picture" style="display:none;">
+            <div id="photoBoxPlaceholder" class="photo-placeholder">
+              <span>No Photo</span>
+            </div>
+          </div>
+          <input type="file" id="photoBoxInput" accept="image/*" style="display:none;">
+          <div class="photo-box-actions">
+            <button type="button" class="btn secondary small" id="photoBoxBtn">Upload photo</button>
+            <button type="button" class="btn danger small" id="photoBoxRemoveBtn" style="display:none;">Remove</button>
+          </div>
+          <div id="photoBoxHint" class="photo-box-hint"></div>
+        </div>
+        <div class="form-grid" style="flex:1;">
+        <div class="field"><label>First name *</label><input type="text" id="inFirstName"></div>
+        <div class="field"><label>Middle name</label><input type="text" id="inMiddleName"></div>
+        <div class="field"><label>Last name *</label><input type="text" id="inLastName"></div>
+        <div class="field"><label>Marital status</label>
+          <select id="inMaritalStatus"><option value="">Select</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option><option>Separated</option></select>
+        </div>
+        <div class="field"><label>Sex *</label>
+          <select id="inSex"><option value="">Select</option><option>Male</option><option>Female</option></select>
+        </div>
+        <div class="field"><label>Grade *</label><input type="text" id="inGrade" placeholder="e.g. Principal Officer"></div>
+        <div class="field"><label>Position / Rank</label><input type="text" id="inPosition"></div>
+        <div class="field"><label>Directorate / Agency *</label>
+          <select id="inUnit"><option value="">Select</option></select>
+        </div>
+        <div class="field" id="inUnitOtherWrap" style="display:none;"><label>Specify directorate / agency</label><input type="text" id="inUnitOther" placeholder="Type the name"></div>
+        <div class="field"><label>Employment status</label>
+          <select id="inStatus"><option value="">Select</option><option>Full-Time</option><option>Contract</option><option>Secondment</option><option>National Service</option><option>Retired</option></select>
+        </div>
+        <div class="field"><label>Staff category</label>
+          <select id="inCategory"><option value="">Select</option><option>Senior Staff</option><option>Junior Staff</option></select>
+        </div>
+        <div class="field"><label>Professional category</label>
+          <select id="inProfCategory"><option value="">Select</option><option>Professional</option><option>Sub-Professional</option></select>
+        </div>
+        <div class="field"><label>First appointment date</label><input type="date" id="inFirstAppt"></div>
+        <div class="field"><label>Current appointment date</label><input type="date" id="inCurrentAppt"></div>
+        <div class="field">
+          <label>Date posted to Ministry</label>
+          <input type="date" id="inDatePosted">
+          <span id="yosDisplay" style="font-size:11px;color:var(--slate);margin-top:3px;"></span>
+        </div>
+        <div class="field"><label>Date of birth</label><input type="date" id="inDob"></div>
+        <div class="field"><label>Staff / SSNIT number</label><input type="text" id="inStaffNo"></div>
+        <div class="field"><label>Phone number</label><input type="text" id="inContact" placeholder="e.g. 024 000 0000"></div>
+        <div class="field full"><label>Email</label><input type="email" id="inEmail"></div>
+        <div class="field full"><label>Qualifications</label><textarea id="inQual" rows="2" placeholder="e.g. MSc Public Administration, BA Economics"></textarea></div>
+        <div class="field full" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
+          <label style="font-size:12px;color:var(--navy);margin-bottom:2px;">Supervisor</label>
+        </div>
+        <div class="field"><label>Supervisor's name</label><input type="text" id="inSupName"></div>
+        <div class="field"><label>Supervisor's grade</label><input type="text" id="inSupGrade"></div>
+        <div class="field"><label>Supervisor's ID</label><input type="text" id="inSupId"></div>
+        <div class="field full" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
+          <label style="font-size:12px;color:var(--navy);margin-bottom:2px;">Emergency contact person</label>
+        </div>
+        <div class="field"><label>Name</label><input type="text" id="inEmergName"></div>
+        <div class="field"><label>Relationship</label><input type="text" id="inEmergRelationship" placeholder="e.g. Spouse, Parent, Sibling"></div>
+        <div class="field"><label>Emergency contact number</label><input type="text" id="inEmergContact"></div>
+        <div class="field full"><label>Remarks</label><textarea id="inRemarks" rows="2"></textarea></div>
+        <div class="field full" id="attachmentsSection" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;display:none;">
+          <label style="font-size:12px;color:var(--navy);margin-bottom:8px;display:block;">Other Attachments</label>
+          <div id="attachmentsList"></div>
+        </div>
+        <div class="field full" id="trainingSummarySection" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;display:none;">
+          <label style="font-size:12px;color:var(--navy);margin-bottom:8px;display:block;">Training Records</label>
+          <p style="font-size:12.5px;color:var(--slate);margin:0 0 8px;" id="trainingSummaryText">No training records logged.</p>
+          <button type="button" class="btn secondary small" id="btnGoToTraining">Manage training records</button>
+        </div>
+        <div class="field full" id="attachmentsHint" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
+          <p style="font-size:12px;color:var(--slate);margin:0;">Save this record first — you can then attach the appointment letter, promotion letter and release letter, and manage training records, while editing it.</p>
+        </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn gold" id="btnSave">Save record</button>
+        <button class="btn secondary" id="btnResetForm">Clear form</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAINING RECORDS -->
+  <section class="view" id="view-training">
+    <div class="panel-title">
+      <h2>Training Records</h2>
+      <span class="count-chip" id="trainingCount">0 records</span>
+      <button class="btn gold" id="btnAddTraining" style="margin-left:auto;">Add training record</button>
+    </div>
+    <p style="font-size:12.5px;color:var(--slate);max-width:700px;margin-top:-8px;">
+      Courses, workshops, and certifications completed by staff — across active and quarantined staff alike,
+      so training history is preserved even after someone exits the Ministry.
+    </p>
+    <div class="filter-bar">
+      <div class="field">
+        <label>Search staff or course</label>
+        <input type="text" id="fTrainingSearch" placeholder="Type a name or course title...">
+      </div>
+      <div class="field"><button class="btn secondary" id="btnClearTrainingFilter">Clear</button></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Staff Name</th><th>Directorate/Agency</th><th>Course / Training</th><th>Provider</th>
+            <th>Start Date</th><th>End Date</th><th>Certificate</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="trainingBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- IMPORT -->
+  <section class="view" id="view-import">
+    <div class="panel-title"><h2>Import from Excel</h2></div>
+    <div class="import-box" id="dropZone">
+      <p style="margin:0 0 10px;font-size:14px;">Drop an .xlsx or .csv file here, or</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+      <button class="btn gold" id="btnChooseFile">Choose file</button>
+      <p style="margin:14px 0 0;font-size:12px;color:var(--slate);">
+        The first row should contain column headers (e.g. Name, Sex, Grade, Directorate/Agency,
+        First Appointment Date, Current Appointment Date, Date Posted, Qualifications). Columns are
+        matched automatically — you can correct the mapping before importing.
+      </p>
+    </div>
+    <div id="mappingArea"></div>
+    <div class="import-log" id="importLog" style="display:none;"></div>
+
+    <div class="panel-title" style="margin-top:34px;"><h2 style="font-size:16px;">Backup &amp; Restore</h2></div>
+    <div class="import-box" style="text-align:left;max-width:640px;">
+      <p style="margin:0 0 12px;font-size:13px;color:var(--slate);">
+        Back up the complete register — every field, for every record, and every attached passport
+        photo and letter — to a single file you can store safely (e.g. on a shared drive, or a USB
+        drive kept elsewhere). Larger registers with many attachments will produce a larger file, which
+        may take a moment to prepare. Restoring will replace all data currently in the register with
+        the contents of the backup file.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn gold" id="btnBackup">Download backup (.json)</button>
+        <button class="btn secondary" id="btnRestoreChoose">Restore from backup</button>
+        <input type="file" id="restoreInput" accept=".json" style="display:none;">
+      </div>
+    </div>
+  </section>
+
+  <!-- AI ANALYSIS REPORT -->
+  <section class="view" id="view-users">
+    <div class="panel-title"><h2>User Accounts</h2></div>
+    <div id="tempPwBox" style="display:none;background:#fff8e6;border:1px solid var(--gold);padding:12px 16px;margin-bottom:16px;font-size:13px;line-height:1.6;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <input id="nuName" placeholder="Full name" style="padding:8px;border:1px solid var(--line);min-width:200px;">
+      <input id="nuEmail" type="email" placeholder="Email (used to sign in)" style="padding:8px;border:1px solid var(--line);min-width:240px;">
+      <select id="nuRole" style="padding:8px;border:1px solid var(--line);"><option value="general">General Officer</option><option value="officer">Authorised Officer</option><option value="admin">HR / Administrator</option></select>
+      <button class="btn gold" id="btnCreateUser">Create account</button>
+    </div>
+    <div style="overflow-x:auto;"><table id="usersTable" style="width:100%;border-collapse:collapse;font-size:13px;background:#fff;"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="panel-title" style="margin-top:34px;"><h2 style="font-size:16px;">Audit Log (latest 500)</h2></div>
+    <div style="overflow:auto;max-height:420px;"><table id="auditTable" style="width:100%;border-collapse:collapse;font-size:12.5px;background:#fff;"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Record</th><th>Details</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="view" id="view-ai">
+    <div class="panel-title">
+      <h2>AI Staff Analysis Report</h2>
+      <button class="btn gold" id="btnGenerateReport">Generate report</button>
+    </div>
+    <p style="font-size:12.5px;color:var(--slate);max-width:720px;margin-top:-8px;">
+      Analyzes the current establishment data — workforce composition, gender balance, staff/professional category
+      mix, grade spread, and succession/retirement risk — using only aggregate counts, not individual names.
+    </p>
+
+    <div class="ai-key-box" id="aiKeyBox">
+      <button type="button" class="ai-key-toggle" id="aiKeyToggle">⚙ AI connection settings</button>
+      <div class="ai-key-panel" id="aiKeyPanel" style="display:none;">
+        <p style="font-size:12px;color:var(--slate);margin:0 0 10px;">
+          To generate the report automatically when you're online, this tool needs an Anthropic API key of your own
+          (create one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>).
+          Usage is billed to your Anthropic account. The key is stored only in this browser on this computer — it is
+          never sent anywhere except directly to Anthropic when you generate a report. If you skip this, you can still
+          use the "Copy prompt" option to run the analysis manually through Claude or another AI assistant.
+        </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <input type="password" id="aiApiKeyInput" placeholder="sk-ant-…" style="flex:1;min-width:220px;font-size:12.5px;padding:7px 9px;border:1px solid #c9c3b3;border-radius:var(--radius);">
+          <button class="btn gold small" id="btnSaveApiKey">Save key</button>
+          <button class="btn danger small" id="btnClearApiKey">Remove key</button>
+        </div>
+        <p id="aiKeyStatus" style="font-size:11.5px;color:var(--slate);margin:8px 0 0;"></p>
+      </div>
+    </div>
+
+    <div id="aiReportArea"></div>
+  </section>
+
+</main>
+
+<footer class="foot">MoCDTI Staff Establishment Register &middot; data is saved locally in this browser on this computer only — keep this file in the same folder and use the same browser to access your records</footer>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal">
+    <h3>Delete this record?</h3>
+    <p>This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn secondary" id="btnCancelDelete">Cancel</button>
+      <button class="btn danger" id="btnConfirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="genericConfirmModal">
+  <div class="modal">
+    <h3 id="genericConfirmTitle">Confirm</h3>
+    <p id="genericConfirmMessage" style="white-space:pre-line;"></p>
+    <div class="modal-actions">
+      <button class="btn secondary" id="genericConfirmCancel">Cancel</button>
+      <button class="btn gold" id="genericConfirmOk">Continue</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="quarantineModal">
+  <div class="modal" style="max-width:440px;">
+    <h3>Move to Quarantine</h3>
+    <p style="font-size:13px;color:var(--slate);margin:0 0 14px;">
+      Moving <strong id="quarantineStaffName"></strong> to quarantine removes them from the active roster,
+      the Dashboard, and Staff Records — their record and attachments are kept and can be restored later.
+    </p>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Reason for exit</label>
+      <select id="quarantineTypeInput">
+        <option value="Posted Out">Posted Out</option>
+        <option value="Retired">Retired</option>
+        <option value="Resigned">Resigned</option>
+        <option value="Deceased">Deceased</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Exit date</label>
+      <input type="date" id="quarantineDateInput">
+    </div>
+    <div class="field" style="margin-bottom:6px;">
+      <label>Additional details (optional)</label>
+      <textarea id="quarantineReasonInput" rows="2" placeholder="e.g. Posted to NITA / transferred to another ministry"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="quarantineCancel">Cancel</button>
+      <button class="btn danger" id="quarantineConfirm">Move to Quarantine</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="trainingModal">
+  <div class="modal" style="max-width:460px;">
+    <h3 id="trainingModalTitle">Add Training Record</h3>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Staff member</label>
+      <select id="trainingStaffSelect"></select>
+    </div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field full"><label>Course / Training title</label><input type="text" id="trainingTitle" placeholder="e.g. Public Financial Management"></div>
+      <div class="field full"><label>Provider / Institution</label><input type="text" id="trainingProvider" placeholder="e.g. GIMPA, civil service training school"></div>
+      <div class="field"><label>Start date</label><input type="date" id="trainingStart"></div>
+      <div class="field"><label>End date</label><input type="date" id="trainingEnd"></div>
+      <div class="field"><label>Certificate obtained</label>
+        <select id="trainingCertificate"><option value="">Not specified</option><option value="Yes">Yes</option><option value="No">No</option><option value="Pending">Pending</option></select>
+      </div>
+      <div class="field full"><label>Remarks</label><textarea id="trainingRemarks" rows="2"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="trainingCancel">Cancel</button>
+      <button class="btn gold" id="trainingSave">Save training record</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ STATE ============ */
+let staff = [];
+let pendingDeleteId = null;
+let sortKey = null, sortDir = 1;
+let pendingImportRows = null;
+let charts = {};
+
+const ATTACHMENT_SLOTS = [
+  {key:'passportPhoto', label:'Passport picture', accept:'image/*'},
+  {key:'appointmentLetter', label:'Appointment letter', accept:'.pdf,.doc,.docx,image/*'},
+  {key:'promotionLetter', label:'Promotion letter', accept:'.pdf,.doc,.docx,image/*'},
+  {key:'releaseLetter', label:'Release letter', accept:'.pdf,.doc,.docx,image/*'}
+];
+const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024; // 25MB raw — local IndexedDB storage, not the 5MB artifact-storage cap
+
+/* ============ SERVER API LAYER ============
+   Replaces the browser-only IndexedDB + local password engine. Data now lives
+   in PostgreSQL behind the Flask server; sign-in is by HR-created accounts. */
+let ME=null, CAN_EDIT=false, IS_ADMIN=false;
+const ROLE_LABELS={admin:'HR / Administrator',officer:'Authorised Officer',general:'General Officer'};
+async function api(method,url,body){
+  const opt={method,credentials:'same-origin',headers:{'X-Requested-With':'fetch'}};
+  if(body!==undefined){opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(body);}
+  const r=await fetch(url,opt);
+  if(r.status===401){location.href='/login';throw new Error('Not signed in');}
+  return r;
+}
+const isSrvId=id=>/^\d+$/.test(String(id));
+function parseAttachKey(key){
+  const m=/^mocdti-attach-(\d+)-(passportPhoto|appointmentLetter|promotionLetter|releaseLetter)$/.exec(key||'');
+  return m?{id:m[1],slot:m[2]}:null;
+}
+/* attachments keep the old storeGet/storeSet/storeDelete names so the rest of the code is unchanged */
+async function storeGet(key){
+  const a=parseAttachKey(key); if(!a) return null;
+  const r=await api('GET',`/api/staff/${a.id}/attachment/${a.slot}`);
+  if(!r.ok) return null;
+  const j=await r.json(); return {key,value:j.data};
+}
+async function storeSet(key,value){
+  const a=parseAttachKey(key); if(!a) throw new Error('Save the record first, then attach files');
+  const r=await api('PUT',`/api/staff/${a.id}/attachment/${a.slot}`,{data:value});
+  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||'Upload failed'); }
+  return {key,value};
+}
+async function storeDelete(key){
+  const a=parseAttachKey(key);
+  if(a) await api('DELETE',`/api/staff/${a.id}/attachment/${a.slot}`);
+}
+
+const STORAGE_INDEX_KEY = 'mocdti-staff-index';
+const LEGACY_STORAGE_KEY = 'mocdti-staff-records';
+const recordKey = id => `mocdti-staff-${id}`;
+const attachKey = (id,slot) => `mocdti-attach-${id}-${slot}`;
+
+const ORG_UNITS = {
+  'Directorates': [
+    'General Administration',
+    'Finance',
+    'Human Resource Management and Development',
+    'Policy, Planning, Budgeting, Monitoring and Evaluation (PPBME)',
+    'Research, Statistics and Information Management (RSIM)',
+    'Digital Technology',
+    'Innovations',
+    'Internal Audit'
+  ],
+  'Agencies': [
+    'National Communications Authority (NCA)',
+    'National Information Technology Agency (NITA)',
+    'Ghana Investment Fund for Electronic Communications (GIFEC)',
+    'Ghana Post Company Limited (GPCL)',
+    'Ghana Meteorological Agency (GMet)',
+    'Postal and Courier Services Regulatory Commission (PCSRC)',
+    'Data Protection Commission (DPC)',
+    'Ghana Domain Name Registry (GDNR)',
+    'Ghana-India Kofi Annan Centre of Excellence in ICT (AITI-KACE)',
+    'Ghana Digital Centres Ltd. (formerly Accra Digital Centre)',
+    'Cybersecurity Authority / National Cyber Security Centre (NCSC)'
+  ]
+};
+
+const FIELD_MAP_TARGETS = [
+  {key:'name', label:'Full name (auto-split into first/last)'},
+  {key:'firstName', label:'First name'},
+  {key:'middleName', label:'Middle name'},
+  {key:'lastName', label:'Last name'},
+  {key:'sex', label:'Sex'},
+  {key:'maritalStatus', label:'Marital status'},
+  {key:'grade', label:'Grade'},
+  {key:'unit', label:'Directorate / Agency'},
+  {key:'position', label:'Position'},
+  {key:'category', label:'Staff category (Senior/Junior)'},
+  {key:'profCategory', label:'Professional / Sub-Professional'},
+  {key:'firstAppointment', label:'First appointment date'},
+  {key:'currentAppointment', label:'Current appointment date'},
+  {key:'datePosted', label:'Date posted to Ministry'},
+  {key:'dob', label:'Date of birth'},
+  {key:'qualifications', label:'Qualifications'},
+  {key:'status', label:'Employment status'},
+  {key:'staffNo', label:'Staff / SSNIT number'},
+  {key:'contact', label:'Phone number'},
+  {key:'email', label:'Email'},
+  {key:'supName', label:"Supervisor's name"},
+  {key:'supGrade', label:"Supervisor's grade"},
+  {key:'supId', label:"Supervisor's ID"},
+  {key:'emergName', label:'Emergency contact name'},
+  {key:'emergRelationship', label:'Emergency contact relationship'},
+  {key:'emergContact', label:'Emergency contact number'},
+  {key:'remarks', label:'Remarks'},
+  {key:'', label:'— Do not import —'}
+];
+
+const HEADER_GUESSES = {
+  firstName:['first name','firstname','given name'],
+  middleName:['middle name','middlename','other name'],
+  lastName:['last name','lastname','surname','family name'],
+  name:['name','fullname','full name','staffname','employee'],
+  sex:['sex','gender'],
+  maritalStatus:['marital status','martial status'],
+  grade:['grade','rank grade','job grade'],
+  unit:['directorate','agency','directorate/agency','directorate / agency','department','unit'],
+  position:['position','rank','title','job title','designation'],
+  category:['staff category','category','senior/junior','senior or junior'],
+  profCategory:['professional category','professional/sub-professional','professional or sub-professional'],
+  firstAppointment:['first appointment','first appointment date','date first appointed','date of first appointment'],
+  currentAppointment:['current appointment','current appointment date','date of current appointment','present appointment'],
+  datePosted:['date posted','date posted to ministry','posting date','date posted to the ministry'],
+  dob:['date of birth','dob','birth date'],
+  qualifications:['qualification','qualifications','academic qualification'],
+  status:['employment status','status','appointment type'],
+  staffNo:['staff no','staff number','ssnit','ssnit number','staff id'],
+  supName:["supervisor's name",'supervisor name','supervisor'],
+  supGrade:["supervisor's grade",'supervisor grade'],
+  supId:["supervisor's id",'supervisor id'],
+  emergName:['emergency contact name','emergency contact person','emergency name'],
+  emergRelationship:['emergency relationship','relationship'],
+  emergContact:['emergency contact number','emergency phone','emergency contact'],
+  contact:['contact','phone','telephone','mobile','contact number','phone number'],
+  email:['email','e-mail'],
+  remarks:['remarks','notes','comment']
+};
+
+/* ============ UTIL ============ */
+function uid(){return 's_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);}
+function fullName(record){
+  if(record.firstName || record.lastName){
+    return [record.firstName, record.middleName, record.lastName].filter(Boolean).join(' ');
+  }
+  return record.name || '';
+}
+function splitName(full){
+  const parts=(full||'').trim().split(/\s+/).filter(Boolean);
+  if(parts.length===0) return {firstName:'',middleName:'',lastName:''};
+  if(parts.length===1) return {firstName:parts[0],middleName:'',lastName:''};
+  return {firstName:parts[0], lastName:parts[parts.length-1], middleName:parts.slice(1,-1).join(' ')};
+}
+function findPossibleDuplicates(record){
+  const norm=s=>(s||'').trim().toLowerCase();
+  const candidateName=norm(fullName(record));
+  return staff.filter(existing=>{
+    if(existing.id===record.id) return false; // don't flag itself when editing
+    // same Staff/SSNIT number is a strong signal
+    if(record.staffNo && norm(existing.staffNo)===norm(record.staffNo)) return true;
+    // same full name + same date of birth is a strong signal
+    if(record.dob && norm(existing.dob)===norm(record.dob) && norm(fullName(existing))===candidateName && candidateName) return true;
+    // same full name + same directorate/agency is a softer signal, still worth a warning
+    if(candidateName && norm(fullName(existing))===candidateName && norm(existing.unit)===norm(record.unit)) return true;
+    return false;
+  });
+}
+function esc(s){return (s===undefined||s===null)?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtDate(d){
+  if(!d) return '';
+  const dt = new Date(d);
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* In-app confirm dialog — replaces the browser's native confirm(), which can be
+   silently blocked in some browser/preview contexts (returning false with no
+   visible prompt at all, which looks exactly like a click that did nothing). */
+function showConfirm(title, message, confirmLabel){
+  return new Promise(resolve=>{
+    const modal=document.getElementById('genericConfirmModal');
+    const okBtn=document.getElementById('genericConfirmOk');
+    const cancelBtn=document.getElementById('genericConfirmCancel');
+    document.getElementById('genericConfirmTitle').textContent=title;
+    document.getElementById('genericConfirmMessage').textContent=message;
+    okBtn.textContent=confirmLabel||'Continue';
+    modal.classList.add('show');
+    function cleanup(result){
+      modal.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    }
+    function onOk(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
+function fmtBytes(n){
+  if(n===undefined||n===null) return '';
+  if(n<1024) return n+' B';
+  if(n<1024*1024) return Math.round(n/1024)+' KB';
+  return (n/(1024*1024)).toFixed(1)+' MB';
+}
+
+/* ============ PERSISTENCE ============
+   Each staff record is stored under its own key (mocdti-staff-<id>), and a
+   lightweight index key lists which ids exist. This gives every record its
+   own storage allowance instead of forcing the whole register into one
+   capped value, and each attachment (photo/letter) also gets its own key —
+   so the system's effective capacity grows with the number of records
+   rather than being fixed. */
+async function loadStaff(){
+  staff=[];
+  const r=await api('GET','/api/staff');
+  if(!r.ok){ showToast('Could not load staff records from the server'); return; }
+  staff=await r.json();
+  if(CAN_EDIT) await migrateEmploymentStatusLabels();
+  renderAll();
+}
+async function migrateEmploymentStatusLabels(){
+  const statusFixes = {'Permanent':'Full-Time', 'Fulltime':'Full-Time'};
+  const categoryFixes = {'Senior':'Senior Staff', 'Junior':'Junior Staff'};
+  const toFix = staff.filter(s=>
+    (s.status && statusFixes[s.status]) ||
+    (s.category && categoryFixes[s.category])
+  );
+  if(toFix.length===0) return;
+  for(const s of toFix){
+    if(s.status && statusFixes[s.status]) s.status = statusFixes[s.status];
+    if(s.category && categoryFixes[s.category]) s.category = categoryFixes[s.category];
+    await saveRecord(s);
+  }
+  showToast(`Updated ${toFix.length} record(s): status/category labels normalized`);
+}
+async function saveIndex(){ return true; }  // server keeps the list; nothing to do
+async function saveRecord(record){
+  try{
+    const body={...record, attachments:record.attachments||{}, trainings:record.trainings||[]};
+    let r=null;
+    if(isSrvId(record.id)){
+      r=await api('PUT','/api/staff/'+record.id,body);
+      if(r.status===404) r=null;           // deleted meanwhile / restore from backup: create instead
+    }
+    if(!r) r=await api('POST','/api/staff',body);
+    if(!r.ok){
+      const e=await r.json().catch(()=>({}));
+      showToast(e.error||'Could not save this record');
+      return false;
+    }
+    const saved=await r.json();
+    record.id=saved.id; record.trainings=saved.trainings;
+    return true;
+  }catch(e){ showToast('Could not save this record — check your connection'); return false; }
+}
+async function deleteRecordStorage(id){
+  if(isSrvId(id)){ try{ await api('DELETE','/api/staff/'+id); }catch(e){} }
+}
+
+/* ============ ORG UNITS DROPDOWN ============ */
+function populateUnitSelect(){
+  const sel=document.getElementById('inUnit');
+  let html='<option value="">Select</option>';
+  Object.entries(ORG_UNITS).forEach(([grp,items])=>{
+    html+=`<optgroup label="${esc(grp)}">`+items.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('')+'</optgroup>';
+  });
+  html+='<option value="__other__">Other (specify)…</option>';
+  sel.innerHTML=html;
+}
+document.getElementById('inUnit').addEventListener('change',()=>{
+  const wrap=document.getElementById('inUnitOtherWrap');
+  wrap.style.display = document.getElementById('inUnit').value==='__other__' ? 'flex':'none';
+});
+populateUnitSelect();
+
+/* ============ VIEW SWITCHING ============ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view==='dashboard') renderDashboard();
+    if(btn.dataset.view==='add' && !document.getElementById('editId').value) resetForm();
+    if(btn.dataset.view==='quarantine') renderQuarantineTable();
+    if(btn.dataset.view==='training') renderTrainingTable();
+  });
+});
+
+/* ============ RENDER: FILTER OPTIONS ============ */
+function uniqueVals(key){
+  return [...new Set(staff.map(s=>s[key]).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+}
+function refreshFilterOptions(){
+  const unitSel=document.getElementById('fUnit');
+  const gradeSel=document.getElementById('fGrade');
+  const statusSel=document.getElementById('fStatus');
+  const curUnit=unitSel.value, curGrade=gradeSel.value, curStatus=statusSel.value;
+  unitSel.innerHTML='<option value="">All</option>'+uniqueVals('unit').map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');
+  gradeSel.innerHTML='<option value="">All</option>'+uniqueVals('grade').map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');
+  statusSel.innerHTML='<option value="">All</option>'+uniqueVals('status').map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  unitSel.value=curUnit; gradeSel.value=curGrade; statusSel.value=curStatus;
+}
+
+/* ============ RENDER: TABLE ============ */
+function yearsOfService(record){
+  if(!record || !record.datePosted) return null;
+  const d=new Date(record.datePosted);
+  if(isNaN(d)) return null;
+  const now=new Date();
+  let years=now.getFullYear()-d.getFullYear();
+  const monthDiff=now.getMonth()-d.getMonth();
+  if(monthDiff<0 || (monthDiff===0 && now.getDate()<d.getDate())) years--;
+  return Math.max(0,years);
+}
+function yearsOfServiceLabel(record){
+  const y=yearsOfService(record);
+  if(y===null) return '—';
+  if(y===0) return '<1 yr';
+  return y+' yr'+(y===1?'':'s');
+}
+
+function activeStaff(){ return staff.filter(s=>!s.quarantined); }
+function quarantinedStaff(){ return staff.filter(s=>s.quarantined); }
+
+function getFiltered(){
+  const search=document.getElementById('fSearch').value.trim().toLowerCase();
+  const unit=document.getElementById('fUnit').value;
+  const sex=document.getElementById('fSex').value;
+  const grade=document.getElementById('fGrade').value;
+  const status=document.getElementById('fStatus').value;
+  const category=document.getElementById('fCategory').value;
+  const profCategory=document.getElementById('fProfCategory').value;
+  let rows = activeStaff().filter(s=>{
+    if(search && !fullName(s).toLowerCase().includes(search)) return false;
+    if(unit && s.unit!==unit) return false;
+    if(sex && s.sex!==sex) return false;
+    if(grade && s.grade!==grade) return false;
+    if(status && s.status!==status) return false;
+    if(category && s.category!==category) return false;
+    if(profCategory && s.profCategory!==profCategory) return false;
+    return true;
+  });
+  if(sortKey){
+    rows = rows.slice().sort((a,b)=>{
+      const av=(a[sortKey]||'').toString().toLowerCase();
+      const bv=(b[sortKey]||'').toString().toLowerCase();
+      if(av<bv) return -1*sortDir;
+      if(av>bv) return 1*sortDir;
+      return 0;
+    });
+  }
+  return rows;
+}
+
+function renderTable(){
+  const rows=getFiltered();
+  document.getElementById('recordCount').textContent = rows.length+' record'+(rows.length===1?'':'s')+ (rows.length!==staff.length? ' (of '+staff.length+')':'');
+  const body=document.getElementById('recordsBody');
+  if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="15" class="empty-note" style="white-space:normal;">No records match these filters.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(s=>`
+    <tr>
+      <td><strong>${esc(fullName(s))}</strong></td>
+      <td><span class="tag ${s.sex==='Female'?'f':'m'}">${esc(s.sex||'—')}</span></td>
+      <td>${esc(s.maritalStatus)||'—'}</td>
+      <td>${esc(s.grade)}</td>
+      <td>${esc(s.unit)}</td>
+      <td>${esc(s.position)}</td>
+      <td>${fmtDate(s.firstAppointment)}</td>
+      <td>${fmtDate(s.currentAppointment)}</td>
+      <td>${fmtDate(s.datePosted)}</td>
+      <td>${yearsOfServiceLabel(s)}</td>
+      <td>${esc(s.category)||'—'}</td>
+      <td>${esc(s.profCategory)||'—'}</td>
+      <td title="${esc(s.qualifications)}">${esc((s.qualifications||'').slice(0,28))}${(s.qualifications||'').length>28?'…':''}</td>
+      <td>${esc(s.status)||'—'}</td>
+      <td class="row-actions">
+        <button class="btn secondary small" onclick="editRecord('${s.id}')">Edit</button>
+        <button class="btn secondary small" onclick="openQuarantineModal('${s.id}')">Quarantine</button>
+        <button class="btn danger small" onclick="askDelete('${s.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+document.querySelectorAll('#recordsTable thead th[data-key]').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const key=th.dataset.key;
+    if(sortKey===key) sortDir*=-1; else {sortKey=key; sortDir=1;}
+    renderTable();
+  });
+});
+['fSearch','fUnit','fSex','fGrade','fStatus','fCategory','fProfCategory'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',renderTable);
+  document.getElementById(id).addEventListener('change',renderTable);
+});
+document.getElementById('btnClearFilters').addEventListener('click',()=>{
+  document.getElementById('fSearch').value='';
+  document.getElementById('fUnit').value='';
+  document.getElementById('fSex').value='';
+  document.getElementById('fGrade').value='';
+  document.getElementById('fStatus').value='';
+  document.getElementById('fCategory').value='';
+  document.getElementById('fProfCategory').value='';
+  renderTable();
+});
+
+/* ============ FORM ============ */
+function resetForm(){
+  document.getElementById('editId').value='';
+  ['inFirstName','inMiddleName','inLastName','inSex','inMaritalStatus','inGrade','inPosition','inUnit','inUnitOther','inStatus','inCategory','inProfCategory','inFirstAppt','inCurrentAppt','inDatePosted','inDob','inStaffNo','inContact','inEmail','inQual','inSupName','inSupGrade','inSupId','inEmergName','inEmergRelationship','inEmergContact','inRemarks']
+    .forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inUnitOtherWrap').style.display='none';
+  document.getElementById('formHeading').textContent='Add Staff Record';
+  document.getElementById('attachmentsSection').style.display='none';
+  document.getElementById('attachmentsHint').style.display='block';
+  document.getElementById('trainingSummarySection').style.display='none';
+  document.getElementById('yosDisplay').textContent='';
+  renderPhotoBox(null);
+}
+document.getElementById('btnResetForm').addEventListener('click',resetForm);
+document.getElementById('inDatePosted').addEventListener('change', ()=>{
+  const y=yearsOfService({datePosted:document.getElementById('inDatePosted').value});
+  document.getElementById('yosDisplay').textContent = y===null ? '' : `${y===0?'Less than 1 year':y+' year'+(y===1?'':'s')} with the Ministry`;
+});
+
+function editRecord(id){
+  const s = staff.find(x=>x.id===id);
+  if(!s) return;
+  document.getElementById('editId').value=s.id;
+  let fn=s.firstName, mn=s.middleName, ln=s.lastName;
+  if(!fn && !ln && s.name){ const split=splitName(s.name); fn=split.firstName; mn=split.middleName; ln=split.lastName; }
+  document.getElementById('inFirstName').value=fn||'';
+  document.getElementById('inMiddleName').value=mn||'';
+  document.getElementById('inLastName').value=ln||'';
+  document.getElementById('inSex').value=s.sex||'';
+  document.getElementById('inMaritalStatus').value=s.maritalStatus||'';
+  document.getElementById('inGrade').value=s.grade||'';
+  document.getElementById('inPosition').value=s.position||'';
+  const unitOptions=[...document.getElementById('inUnit').options].map(o=>o.value);
+  if(s.unit && unitOptions.includes(s.unit)){
+    document.getElementById('inUnit').value=s.unit;
+    document.getElementById('inUnitOtherWrap').style.display='none';
+    document.getElementById('inUnitOther').value='';
+  } else {
+    document.getElementById('inUnit').value='__other__';
+    document.getElementById('inUnitOtherWrap').style.display='flex';
+    document.getElementById('inUnitOther').value=s.unit||'';
+  }
+  document.getElementById('inStatus').value=s.status||'';
+  document.getElementById('inCategory').value=s.category||'';
+  document.getElementById('inProfCategory').value=s.profCategory||'';
+  document.getElementById('inFirstAppt').value=s.firstAppointment||'';
+  document.getElementById('inCurrentAppt').value=s.currentAppointment||'';
+  document.getElementById('inDatePosted').value=s.datePosted||'';
+  document.getElementById('inDob').value=s.dob||'';
+  document.getElementById('inStaffNo').value=s.staffNo||'';
+  document.getElementById('inContact').value=s.contact||'';
+  document.getElementById('inEmail').value=s.email||'';
+  document.getElementById('inQual').value=s.qualifications||'';
+  document.getElementById('inSupName').value=s.supName||'';
+  document.getElementById('inSupGrade').value=s.supGrade||'';
+  document.getElementById('inSupId').value=s.supId||'';
+  document.getElementById('inEmergName').value=s.emergName||'';
+  document.getElementById('inEmergRelationship').value=s.emergRelationship||'';
+  document.getElementById('inEmergContact').value=s.emergContact||'';
+  document.getElementById('inRemarks').value=s.remarks||'';
+  const y=yearsOfService(s);
+  document.getElementById('yosDisplay').textContent = y===null ? '' : `${y===0?'Less than 1 year':y+' year'+(y===1?'':'s')} with the Ministry`;
+  document.getElementById('formHeading').textContent='Edit Staff Record';
+  document.getElementById('attachmentsHint').style.display='none';
+  document.getElementById('attachmentsSection').style.display='block';
+  renderAttachmentsSection(s.id);
+  renderPhotoBox(s.id);
+  renderTrainingSummary(s.id);
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelector('.tab-btn[data-view="add"]').classList.add('active');
+  document.getElementById('view-add').classList.add('active');
+}
+window.editRecord = editRecord;
+
+document.getElementById('btnSave').addEventListener('click', async ()=>{
+  const firstName=document.getElementById('inFirstName').value.trim();
+  const middleName=document.getElementById('inMiddleName').value.trim();
+  const lastName=document.getElementById('inLastName').value.trim();
+  const sex=document.getElementById('inSex').value;
+  const grade=document.getElementById('inGrade').value.trim();
+  let unit=document.getElementById('inUnit').value.trim();
+  if(unit==='__other__') unit=document.getElementById('inUnitOther').value.trim();
+  if(!firstName || !lastName || !sex || !grade || !unit){
+    showToast('First name, last name, sex, grade and directorate/agency are required');
+    return;
+  }
+  const editId=document.getElementById('editId').value;
+  const existing = editId ? staff.find(x=>x.id===editId) : null;
+  const record={
+    id: editId || uid(),
+    firstName, middleName, lastName,
+    name: [firstName, middleName, lastName].filter(Boolean).join(' '),
+    sex, grade, unit,
+    maritalStatus:document.getElementById('inMaritalStatus').value,
+    position:document.getElementById('inPosition').value.trim(),
+    status:document.getElementById('inStatus').value,
+    category:document.getElementById('inCategory').value,
+    profCategory:document.getElementById('inProfCategory').value,
+    firstAppointment:document.getElementById('inFirstAppt').value,
+    currentAppointment:document.getElementById('inCurrentAppt').value,
+    datePosted:document.getElementById('inDatePosted').value,
+    dob:document.getElementById('inDob').value,
+    staffNo:document.getElementById('inStaffNo').value.trim(),
+    contact:document.getElementById('inContact').value.trim(),
+    email:document.getElementById('inEmail').value.trim(),
+    qualifications:document.getElementById('inQual').value.trim(),
+    supName:document.getElementById('inSupName').value.trim(),
+    supGrade:document.getElementById('inSupGrade').value.trim(),
+    supId:document.getElementById('inSupId').value.trim(),
+    emergName:document.getElementById('inEmergName').value.trim(),
+    emergRelationship:document.getElementById('inEmergRelationship').value.trim(),
+    emergContact:document.getElementById('inEmergContact').value.trim(),
+    remarks:document.getElementById('inRemarks').value.trim(),
+    attachments: existing && existing.attachments ? existing.attachments : {},
+    trainings: existing && existing.trainings ? existing.trainings : [],
+    quarantined: existing ? !!existing.quarantined : false,
+    quarantineType: existing ? (existing.quarantineType||'') : '',
+    quarantineDate: existing ? (existing.quarantineDate||'') : '',
+    quarantineReason: existing ? (existing.quarantineReason||'') : ''
+  };
+
+  const dupes = findPossibleDuplicates(record);
+  if(dupes.length>0){
+    const list = dupes.map(d=>`• ${fullName(d)}${d.staffNo?' — Staff/SSNIT No. '+d.staffNo:''}${d.dob?' — DOB '+fmtDate(d.dob):''}`).join('\n');
+    const proceed = await showConfirm('Possible duplicate record', `This may be a duplicate of an existing record:\n\n${list}\n\nSave anyway?`, 'Save anyway');
+    if(!proceed) return;
+  }
+
+  let saveOk;
+  if(editId){
+    const idx=staff.findIndex(x=>x.id===editId);
+    if(idx>-1) staff[idx]=record;
+    saveOk = await saveRecord(record);
+  } else {
+    staff.push(record);
+    saveOk = await saveRecord(record);
+    if(saveOk) saveOk = await saveIndex();
+    if(!saveOk) staff = staff.filter(s=>s.id!==record.id); // roll back in-memory add if the save didn't actually persist
+  }
+  if(!saveOk){
+    renderAll();
+    return;
+  }
+  showToast(editId?'Record updated':'Record added');
+  resetForm();
+  renderAll();
+  if(!editId){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.querySelector('.tab-btn[data-view="records"]').classList.add('active');
+    document.getElementById('view-records').classList.add('active');
+  }
+});
+
+/* ============ DELETE ============ */
+function askDelete(id){
+  pendingDeleteId=id;
+  document.getElementById('confirmModal').classList.add('show');
+}
+window.askDelete = askDelete;
+document.getElementById('btnCancelDelete').addEventListener('click',()=>{
+  pendingDeleteId=null;
+  document.getElementById('confirmModal').classList.remove('show');
+});
+document.getElementById('btnConfirmDelete').addEventListener('click', async ()=>{
+  const id=pendingDeleteId;
+  staff = staff.filter(s=>s.id!==id);
+  pendingDeleteId=null;
+  document.getElementById('confirmModal').classList.remove('show');
+  await deleteRecordStorage(id);
+  await saveIndex();
+  showToast('Record deleted');
+  renderAll();
+  if(document.getElementById('editId').value===id) resetForm();
+});
+
+/* ============ QUARANTINE (staff posted out of the Ministry) ============ */
+let pendingQuarantineId=null;
+function openQuarantineModal(id){
+  const s=staff.find(x=>x.id===id);
+  if(!s) return;
+  pendingQuarantineId=id;
+  document.getElementById('quarantineStaffName').textContent=fullName(s);
+  document.getElementById('quarantineTypeInput').value='Posted Out';
+  document.getElementById('quarantineDateInput').value=new Date().toISOString().slice(0,10);
+  document.getElementById('quarantineReasonInput').value='';
+  document.getElementById('quarantineModal').classList.add('show');
+}
+window.openQuarantineModal = openQuarantineModal;
+document.getElementById('quarantineCancel').addEventListener('click',()=>{
+  pendingQuarantineId=null;
+  document.getElementById('quarantineModal').classList.remove('show');
+});
+document.getElementById('quarantineConfirm').addEventListener('click', async ()=>{
+  const id=pendingQuarantineId;
+  const s=staff.find(x=>x.id===id);
+  if(!s) return;
+  s.quarantined=true;
+  s.quarantineType=document.getElementById('quarantineTypeInput').value || 'Other';
+  s.quarantineDate=document.getElementById('quarantineDateInput').value || new Date().toISOString().slice(0,10);
+  s.quarantineReason=document.getElementById('quarantineReasonInput').value.trim();
+  const ok=await saveRecord(s);
+  document.getElementById('quarantineModal').classList.remove('show');
+  pendingQuarantineId=null;
+  if(!ok){ showToast('Could not move this record to quarantine — please try again'); return; }
+  showToast(`${fullName(s)} moved to quarantine (${s.quarantineType})`);
+  renderAll();
+  renderQuarantineTable();
+  if(document.getElementById('editId').value===id) resetForm();
+});
+
+async function restoreFromQuarantine(id){
+  const s=staff.find(x=>x.id===id);
+  if(!s) return;
+  const proceed = await showConfirm('Restore to active roster', `Restore ${fullName(s)} to the active staff roster?`, 'Restore');
+  if(!proceed) return;
+  s.quarantined=false;
+  s.quarantineType='';
+  s.quarantineDate='';
+  s.quarantineReason='';
+  const ok=await saveRecord(s);
+  if(!ok){ showToast('Could not restore this record — please try again'); return; }
+  showToast(`${fullName(s)} restored to the active roster`);
+  renderAll();
+  renderQuarantineTable();
+}
+window.restoreFromQuarantine = restoreFromQuarantine;
+
+async function deleteQuarantinedPermanently(id){
+  const s=staff.find(x=>x.id===id);
+  if(!s) return;
+  const proceed = await showConfirm('Delete permanently', `Permanently delete ${fullName(s)}'s record? This cannot be undone.`, 'Delete permanently');
+  if(!proceed) return;
+  staff = staff.filter(x=>x.id!==id);
+  await deleteRecordStorage(id);
+  await saveIndex();
+  showToast('Record permanently deleted');
+  renderAll();
+  renderQuarantineTable();
+}
+window.deleteQuarantinedPermanently = deleteQuarantinedPermanently;
+
+function renderQuarantineTable(){
+  const rows=quarantinedStaff().sort((a,b)=>new Date(b.quarantineDate||0)-new Date(a.quarantineDate||0));
+  document.getElementById('quarantineCount').textContent = rows.length+' record'+(rows.length===1?'':'s');
+  const body=document.getElementById('quarantineBody');
+  if(rows.length===0){
+    body.innerHTML=`<tr><td colspan="8" class="empty-note" style="white-space:normal;">No staff currently in quarantine.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(s=>`
+    <tr>
+      <td><strong>${esc(fullName(s))}</strong></td>
+      <td><span class="tag ${s.sex==='Female'?'f':'m'}">${esc(s.sex||'—')}</span></td>
+      <td>${esc(s.grade)}</td>
+      <td>${esc(s.unit)}</td>
+      <td>${esc(s.quarantineType)||'—'}</td>
+      <td>${fmtDate(s.quarantineDate)}</td>
+      <td>${esc(s.quarantineReason)||'—'}</td>
+      <td class="row-actions">
+        <button class="btn gold small" onclick="restoreFromQuarantine('${s.id}')">Restore</button>
+        <button class="btn danger small" onclick="deleteQuarantinedPermanently('${s.id}')">Delete permanently</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/* ============ TRAINING RECORDS ============ */
+let pendingTrainingStaffId=null;
+let pendingTrainingId=null;
+
+function populateTrainingStaffSelect(){
+  const sel=document.getElementById('trainingStaffSelect');
+  const sorted=staff.slice().sort((a,b)=>fullName(a).localeCompare(fullName(b)));
+  sel.innerHTML = sorted.map(s=>`<option value="${s.id}">${esc(fullName(s))}${s.quarantined?' (exited)':''}</option>`).join('');
+}
+
+function openAddTraining(presetStaffId){
+  if(staff.length===0){ showToast('Add a staff record first'); return; }
+  pendingTrainingId=null;
+  document.getElementById('trainingModalTitle').textContent='Add Training Record';
+  populateTrainingStaffSelect();
+  if(presetStaffId) document.getElementById('trainingStaffSelect').value=presetStaffId;
+  document.getElementById('trainingStaffSelect').disabled=false;
+  document.getElementById('trainingTitle').value='';
+  document.getElementById('trainingProvider').value='';
+  document.getElementById('trainingStart').value='';
+  document.getElementById('trainingEnd').value='';
+  document.getElementById('trainingCertificate').value='';
+  document.getElementById('trainingRemarks').value='';
+  document.getElementById('trainingModal').classList.add('show');
+}
+window.openAddTraining = openAddTraining;
+document.getElementById('btnAddTraining').addEventListener('click', ()=>openAddTraining());
+document.getElementById('btnGoToTraining').addEventListener('click', ()=>{
+  const id=document.getElementById('editId').value;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelector('.tab-btn[data-view="training"]').classList.add('active');
+  document.getElementById('view-training').classList.add('active');
+  document.getElementById('fTrainingSearch').value=id ? fullName(staff.find(s=>s.id===id)||{}) : '';
+  renderTrainingTable();
+});
+
+function openEditTraining(staffId, trainingId){
+  const s=staff.find(x=>x.id===staffId);
+  if(!s || !s.trainings) return;
+  const t=s.trainings.find(x=>x.id===trainingId);
+  if(!t) return;
+  pendingTrainingId=trainingId;
+  document.getElementById('trainingModalTitle').textContent='Edit Training Record';
+  populateTrainingStaffSelect();
+  document.getElementById('trainingStaffSelect').value=staffId;
+  document.getElementById('trainingStaffSelect').disabled=true; // keep training attached to the same staff member when editing
+  document.getElementById('trainingTitle').value=t.title||'';
+  document.getElementById('trainingProvider').value=t.provider||'';
+  document.getElementById('trainingStart').value=t.startDate||'';
+  document.getElementById('trainingEnd').value=t.endDate||'';
+  document.getElementById('trainingCertificate').value=t.certificate||'';
+  document.getElementById('trainingRemarks').value=t.remarks||'';
+  document.getElementById('trainingModal').classList.add('show');
+}
+window.openEditTraining = openEditTraining;
+
+document.getElementById('trainingCancel').addEventListener('click',()=>{
+  pendingTrainingId=null;
+  document.getElementById('trainingModal').classList.remove('show');
+});
+
+document.getElementById('trainingSave').addEventListener('click', async ()=>{
+  const staffId=document.getElementById('trainingStaffSelect').value;
+  const title=document.getElementById('trainingTitle').value.trim();
+  if(!staffId || !title){ showToast('Select a staff member and enter a course title'); return; }
+  const s=staff.find(x=>x.id===staffId);
+  if(!s) return;
+  if(!s.trainings) s.trainings=[];
+  const entry={
+    id: pendingTrainingId || uid(),
+    title,
+    provider: document.getElementById('trainingProvider').value.trim(),
+    startDate: document.getElementById('trainingStart').value,
+    endDate: document.getElementById('trainingEnd').value,
+    certificate: document.getElementById('trainingCertificate').value,
+    remarks: document.getElementById('trainingRemarks').value.trim()
+  };
+  if(pendingTrainingId){
+    const idx=s.trainings.findIndex(x=>x.id===pendingTrainingId);
+    if(idx>-1) s.trainings[idx]=entry; else s.trainings.push(entry);
+  } else {
+    s.trainings.push(entry);
+  }
+  const ok=await saveRecord(s);
+  document.getElementById('trainingModal').classList.remove('show');
+  pendingTrainingId=null;
+  if(!ok){ showToast('Could not save the training record — please try again'); return; }
+  showToast('Training record saved');
+  renderTrainingTable();
+  if(document.getElementById('editId').value===staffId) renderTrainingSummary(staffId);
+});
+
+async function deleteTraining(staffId, trainingId){
+  const s=staff.find(x=>x.id===staffId);
+  if(!s || !s.trainings) return;
+  const t=s.trainings.find(x=>x.id===trainingId);
+  const proceed = await showConfirm('Delete training record', `Delete the training record "${t?t.title:''}" for ${fullName(s)}?`, 'Delete');
+  if(!proceed) return;
+  s.trainings=s.trainings.filter(x=>x.id!==trainingId);
+  const ok=await saveRecord(s);
+  if(!ok){ showToast('Could not delete this training record — please try again'); return; }
+  showToast('Training record deleted');
+  renderTrainingTable();
+  if(document.getElementById('editId').value===staffId) renderTrainingSummary(staffId);
+}
+window.deleteTraining = deleteTraining;
+
+function allTrainingRows(){
+  const rows=[];
+  staff.forEach(s=>{
+    (s.trainings||[]).forEach(t=>{
+      rows.push({staffId:s.id, staffName:fullName(s), unit:s.unit, quarantined:s.quarantined, ...t});
+    });
+  });
+  return rows;
+}
+
+function renderTrainingTable(){
+  const search=document.getElementById('fTrainingSearch').value.trim().toLowerCase();
+  let rows=allTrainingRows();
+  if(search){
+    rows=rows.filter(r=>r.staffName.toLowerCase().includes(search) || (r.title||'').toLowerCase().includes(search));
+  }
+  rows.sort((a,b)=>new Date(b.startDate||0)-new Date(a.startDate||0));
+  document.getElementById('trainingCount').textContent = rows.length+' record'+(rows.length===1?'':'s');
+  const body=document.getElementById('trainingBody');
+  if(rows.length===0){
+    body.innerHTML=`<tr><td colspan="8" class="empty-note" style="white-space:normal;">No training records found.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(r=>`
+    <tr>
+      <td><strong>${esc(r.staffName)}</strong>${r.quarantined?' <span class="tag" style="background:#f6ecec;color:#8a3c30;">exited</span>':''}</td>
+      <td>${esc(r.unit)}</td>
+      <td>${esc(r.title)}</td>
+      <td>${esc(r.provider)||'—'}</td>
+      <td>${fmtDate(r.startDate)}</td>
+      <td>${fmtDate(r.endDate)}</td>
+      <td>${esc(r.certificate)||'—'}</td>
+      <td class="row-actions">
+        <button class="btn secondary small" onclick="openEditTraining('${r.staffId}','${r.id}')">Edit</button>
+        <button class="btn danger small" onclick="deleteTraining('${r.staffId}','${r.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+document.getElementById('fTrainingSearch').addEventListener('input', renderTrainingTable);
+document.getElementById('btnClearTrainingFilter').addEventListener('click', ()=>{
+  document.getElementById('fTrainingSearch').value='';
+  renderTrainingTable();
+});
+
+function renderTrainingSummary(staffId){
+  const s=staff.find(x=>x.id===staffId);
+  const wrap=document.getElementById('trainingSummarySection');
+  if(!s){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  const count=(s.trainings||[]).length;
+  document.getElementById('trainingSummaryText').textContent = count===0
+    ? 'No training records logged.'
+    : `${count} training record${count===1?'':'s'} logged.`;
+}
+
+/* ============ EXPORT ============ */
+document.getElementById('btnExport').addEventListener('click',()=>{
+  const rows = getFiltered().map(s=>({
+    'First Name':s.firstName||splitName(s.name).firstName,'Middle Name':s.middleName||splitName(s.name).middleName,'Last Name':s.lastName||splitName(s.name).lastName,
+    'Sex':s.sex,'Marital Status':s.maritalStatus,'Grade':s.grade,'Directorate/Agency':s.unit,'Position':s.position,
+    'Staff Category':s.category,'Professional Category':s.profCategory,
+    'First Appointment Date':s.firstAppointment,'Current Appointment Date':s.currentAppointment,
+    'Date Posted to Ministry':s.datePosted,'Years at Current Organisation':yearsOfService(s),'Date of Birth':s.dob,'Qualifications':s.qualifications,
+    'Employment Status':s.status,'Staff/SSNIT Number':s.staffNo,'Phone Number':s.contact,'Email':s.email,
+    "Supervisor's Name":s.supName,"Supervisor's Grade":s.supGrade,"Supervisor's ID":s.supId,
+    'Emergency Contact Name':s.emergName,'Emergency Contact Relationship':s.emergRelationship,'Emergency Contact Number':s.emergContact,
+    'Remarks':s.remarks
+  }));
+  if(rows.length===0){ showToast('No records to export'); return; }
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Staff Register');
+  XLSX.writeFile(wb, 'MoCDTI_Staff_Register.xlsx');
+});
+
+document.getElementById('btnExportHtml').addEventListener('click',()=>{
+  const rows=getFiltered();
+  if(rows.length===0){ showToast('No records to export'); return; }
+  const generated=new Date().toLocaleString('en-GB');
+  const tableRows=rows.map(s=>`
+    <tr>
+      <td>${esc(fullName(s))}</td><td>${esc(s.sex)}</td><td>${esc(s.maritalStatus)}</td><td>${esc(s.grade)}</td><td>${esc(s.unit)}</td>
+      <td>${esc(s.position)}</td><td>${esc(s.category)}</td><td>${esc(s.profCategory)}</td>
+      <td>${fmtDate(s.firstAppointment)}</td><td>${fmtDate(s.currentAppointment)}</td>
+      <td>${fmtDate(s.datePosted)}</td><td>${yearsOfServiceLabel(s)}</td><td>${esc(s.qualifications)}</td><td>${esc(s.status)}</td>
+      <td>${esc(s.contact)}</td><td>${esc(s.email)}</td>
+      <td>${esc(s.supName)}${s.supGrade?' — '+esc(s.supGrade):''}${s.supId?' ('+esc(s.supId)+')':''}</td>
+      <td>${esc(s.emergName)}${s.emergRelationship?' ('+esc(s.emergRelationship)+')':''}${s.emergContact?' — '+esc(s.emergContact):''}</td>
+    </tr>`).join('');
+  const html=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>MoCDTI Staff Register Export</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2733;margin:32px;}
+  h1{font-size:20px;color:#0a1f35;border-bottom:3px solid #c9a961;padding-bottom:10px;}
+  .meta{font-size:12px;color:#5a6472;margin-bottom:20px;}
+  table{border-collapse:collapse;width:100%;font-size:11.5px;}
+  th{background:#0a1f35;color:#f4f1e8;text-align:left;padding:8px 10px;}
+  td{padding:7px 10px;border-bottom:1px solid #e2dfd4;}
+  tr:nth-child(even){background:#fbfaf6;}
+</style></head><body>
+  <h1>MoCDTI Staff Establishment Register</h1>
+  <div class="meta">Exported ${esc(generated)} &middot; ${rows.length} record(s)</div>
+  <table>
+    <thead><tr><th>Name</th><th>Sex</th><th>Marital Status</th><th>Grade</th><th>Directorate/Agency</th><th>Position</th>
+      <th>Category</th><th>Prof./Sub-Prof.</th>
+      <th>First Appointed</th><th>Current Appointment</th><th>Posted to Ministry</th><th>Years at Current Organisation</th><th>Qualifications</th>
+      <th>Status</th><th>Phone</th><th>Email</th><th>Supervisor</th><th>Emergency Contact</th></tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='MoCDTI_Staff_Register.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* ============ PRINT ============ */
+function openPrintWindow(title, bodyHtml){
+  const win = window.open('', '_blank');
+  if(!win){ showToast('Please allow pop-ups for this site to print'); return; }
+  win.document.open();
+  win.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${esc(title)}</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2733;margin:24px;}
+  h1{font-size:20px;color:#0a1f35;border-bottom:3px solid #c9a961;padding-bottom:8px;margin-bottom:4px;}
+  .meta{font-size:11px;color:#5a6472;margin-bottom:18px;}
+  table{border-collapse:collapse;width:100%;font-size:11px;margin-bottom:18px;}
+  th{background:#0a1f35;color:#f4f1e8;text-align:left;padding:6px 8px;}
+  td{padding:5px 8px;border-bottom:1px solid #e2dfd4;}
+  .section-title{font-size:13px;font-weight:bold;color:#0a1f35;margin:18px 0 8px;border-bottom:1px solid #c9a961;padding-bottom:4px;}
+  .stat-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  .stat-box{border:1px solid #e2dfd4;border-radius:3px;padding:10px 14px;min-width:130px;}
+  .stat-box .v{font-size:20px;font-weight:bold;color:#0a1f35;display:block;}
+  .stat-box .l{font-size:10px;color:#5a6472;text-transform:uppercase;}
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;page-break-inside:avoid;}
+  .chart-box{border:1px solid #e2dfd4;border-radius:3px;padding:10px;}
+  .chart-box img{max-width:100%;}
+  .bd-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-bottom:10px;}
+  .form-grid-print{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;}
+  .form-row{font-size:12px;padding:5px 0;border-bottom:1px solid #eee;}
+  .form-row b{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:#5a6472;}
+  .photo-print{width:110px;height:140px;object-fit:cover;border:1px solid #ccc;float:right;margin-left:16px;}
+  ul{margin:4px 0;padding-left:18px;font-size:12px;}
+  @media print{ @page{ margin:14mm; } }
+</style></head><body>${bodyHtml}
+<script>window.onload=function(){ setTimeout(function(){ window.print(); }, 350); };<\/script>
+</body></html>`);
+  win.document.close();
+}
+
+document.getElementById('btnPrintForm').addEventListener('click', async ()=>{
+  const editId=document.getElementById('editId').value;
+  let unitVal=document.getElementById('inUnit').value;
+  if(unitVal==='__other__') unitVal=document.getElementById('inUnitOther').value;
+  const fields=[
+    ['First Name', document.getElementById('inFirstName').value],
+    ['Middle Name', document.getElementById('inMiddleName').value],
+    ['Last Name', document.getElementById('inLastName').value],
+    ['Sex', document.getElementById('inSex').value],
+    ['Marital Status', document.getElementById('inMaritalStatus').value],
+    ['Grade', document.getElementById('inGrade').value],
+    ['Position / Rank', document.getElementById('inPosition').value],
+    ['Directorate / Agency', unitVal],
+    ['Employment Status', document.getElementById('inStatus').value],
+    ['Staff Category', document.getElementById('inCategory').value],
+    ['Professional Category', document.getElementById('inProfCategory').value],
+    ['First Appointment Date', fmtDate(document.getElementById('inFirstAppt').value)],
+    ['Current Appointment Date', fmtDate(document.getElementById('inCurrentAppt').value)],
+    ['Date Posted to Ministry', fmtDate(document.getElementById('inDatePosted').value)],
+    ['Date of Birth', fmtDate(document.getElementById('inDob').value)],
+    ['Staff / SSNIT Number', document.getElementById('inStaffNo').value],
+    ['Phone Number', document.getElementById('inContact').value],
+    ['Email', document.getElementById('inEmail').value],
+    ['Qualifications', document.getElementById('inQual').value],
+    ["Supervisor's Name", document.getElementById('inSupName').value],
+    ["Supervisor's Grade", document.getElementById('inSupGrade').value],
+    ["Supervisor's ID", document.getElementById('inSupId').value],
+    ['Emergency Contact Name', document.getElementById('inEmergName').value],
+    ['Emergency Contact Relationship', document.getElementById('inEmergRelationship').value],
+    ['Emergency Contact Number', document.getElementById('inEmergContact').value],
+    ['Remarks', document.getElementById('inRemarks').value]
+  ];
+  if(!fields[0][1] && !fields[2][1]){
+    showToast('Enter at least a name before printing');
+    return;
+  }
+  let photoImg='';
+  if(editId){
+    try{
+      const res=await storeGet(attachKey(editId,'passportPhoto'));
+      if(res && res.value) photoImg=`<img class="photo-print" src="${res.value}">`;
+    }catch(e){ /* no photo */ }
+  }
+  const rowsHtml=fields.map(([label,val])=>`<div class="form-row"><b>${esc(label)}</b>${esc(val)||'—'}</div>`).join('');
+  const body=`
+    <h1>MoCDTI Staff Data Form</h1>
+    <div class="meta">Printed ${esc(new Date().toLocaleString('en-GB'))}</div>
+    ${photoImg}
+    <div class="form-grid-print">${rowsHtml}</div>
+  `;
+  openPrintWindow('Staff Data Form', body);
+});
+
+document.getElementById('btnPrintRecords').addEventListener('click', ()=>{
+  const rows=getFiltered();
+  if(rows.length===0){ showToast('No records to print'); return; }
+  const tableRows=rows.map(s=>`
+    <tr>
+      <td>${esc(fullName(s))}</td><td>${esc(s.sex)}</td><td>${esc(s.maritalStatus)}</td><td>${esc(s.grade)}</td><td>${esc(s.unit)}</td>
+      <td>${esc(s.position)}</td><td>${esc(s.category)}</td><td>${esc(s.profCategory)}</td>
+      <td>${fmtDate(s.datePosted)}</td><td>${yearsOfServiceLabel(s)}</td><td>${esc(s.status)}</td>
+      <td>${esc(s.contact)}</td>
+    </tr>`).join('');
+  const body=`
+    <h1>MoCDTI Staff Establishment Register</h1>
+    <div class="meta">Printed ${esc(new Date().toLocaleString('en-GB'))} &middot; ${rows.length} record(s)</div>
+    <table>
+      <thead><tr><th>Name</th><th>Sex</th><th>Marital Status</th><th>Grade</th><th>Directorate/Agency</th><th>Position</th>
+      <th>Category</th><th>Prof./Sub-Prof.</th><th>Posted to Ministry</th><th>Years at Org</th><th>Status</th><th>Phone</th></tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  `;
+  openPrintWindow('Staff Records', body);
+});
+
+document.getElementById('btnPrintDashboard').addEventListener('click', ()=>{
+  if(activeStaff().length===0){ showToast('No data to print — add or import staff records first'); return; }
+  const list=activeStaff();
+  const total=list.length;
+  const female=list.filter(s=>s.sex==='Female').length;
+  const male=list.filter(s=>s.sex==='Male').length;
+  const unitsUsed=new Set(list.map(s=>s.unit).filter(Boolean));
+  const directorateCount=[...unitsUsed].filter(u=>unitCategory(u)==='Directorate').length;
+  const agencyCount=[...unitsUsed].filter(u=>unitCategory(u)==='Agency').length;
+  const fullTime=list.filter(s=>s.status==='Full-Time').length;
+
+  const statBoxes=[
+    ['Total staff', total],
+    ['Directorates / Agencies', `${directorateCount} / ${agencyCount}`],
+    ['Male / Female', `${male} / ${female}`],
+    ['Female representation', `${total?Math.round(female/total*100):0}%`],
+    ['Full-Time staff', fullTime]
+  ].map(([l,v])=>`<div class="stat-box"><span class="v">${esc(String(v))}</span><span class="l">${esc(l)}</span></div>`).join('');
+
+  function bdHtml(counts){
+    const t=Object.values(counts).reduce((a,b)=>a+b,0);
+    return Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="form-row"><b>${esc(k)}</b>${v} (${t?Math.round(v/t*100):0}%)</div>`).join('');
+  }
+
+  const chartMeta=[
+    ['unit','Directorate / Agency Distribution'],
+    ['sex','Staff by Sex'],
+    ['category','Senior / Junior Staff'],
+    ['profCategory','Professional / Sub-Professional'],
+    ['grade','Staff by Grade'],
+    ['status','Employment Status'],
+    ['age','Age Distribution'],
+    ['tenure','Years at Current Organisation'],
+    ['postYear','Postings to Ministry by Year']
+  ];
+  const chartImgs=chartMeta.filter(([id])=>charts[id]).map(([id,title])=>
+    `<div class="chart-box"><div class="section-title" style="margin-top:0;">${esc(title)}</div><img src="${charts[id].toBase64Image()}"></div>`
+  ).join('');
+
+  const retirementHtml=document.getElementById('retirementList').innerHTML;
+  const birthdayHtml=document.getElementById('birthdayList').innerHTML;
+
+  const body=`
+    <h1>MoCDTI Staff Establishment Register — Dashboard</h1>
+    <div class="meta">Printed ${esc(new Date().toLocaleString('en-GB'))}</div>
+    <div class="stat-grid">${statBoxes}</div>
+    <div class="bd-grid">
+      <div><div class="section-title">Directorate / Agency Breakdown</div>${bdHtml(countBy('unit',list))}</div>
+      <div><div class="section-title">Sex Breakdown</div>${bdHtml(countBy('sex',list))}</div>
+      <div><div class="section-title">Staff Category Breakdown</div>${bdHtml(countBy('category',list))}</div>
+      <div><div class="section-title">Professional Category Breakdown</div>${bdHtml(countBy('profCategory',list))}</div>
+    </div>
+    <div class="chart-grid">${chartImgs}</div>
+    <div class="section-title">Due for Retirement (within 24 months)</div>
+    ${retirementHtml}
+    <div class="section-title">Upcoming Birthdays (next 30 days)</div>
+    ${birthdayHtml}
+  `;
+  openPrintWindow('Staff Dashboard', body);
+});
+document.getElementById('btnBackup').addEventListener('click', async ()=>{
+  if(staff.length===0){ showToast('No records to back up'); return; }
+  showToast('Preparing backup, including attached files…');
+  const recordsWithAttachments=[];
+  for(const r of staff){
+    const copy={...r};
+    if(r.attachments && Object.keys(r.attachments).length>0){
+      copy.attachmentsData={};
+      for(const slot of Object.keys(r.attachments)){
+        try{
+          const res=await storeGet(attachKey(r.id, slot));
+          if(res && res.value) copy.attachmentsData[slot]=res.value;
+        }catch(e){ /* attachment unreadable — metadata is still preserved in the record */ }
+      }
+    }
+    recordsWithAttachments.push(copy);
+  }
+  const payload={exportedAt:new Date().toISOString(), source:'MoCDTI Staff Establishment Register', includesAttachments:true, records:recordsWithAttachments};
+  const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const stamp=new Date().toISOString().slice(0,10);
+  a.download=`MoCDTI_Staff_Backup_${stamp}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Backup downloaded, including attached files');
+});
+
+const restoreInput=document.getElementById('restoreInput');
+document.getElementById('btnRestoreChoose').addEventListener('click',()=>restoreInput.click());
+restoreInput.addEventListener('change', async (e)=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const text=await file.text();
+  let parsed;
+  try{ parsed=JSON.parse(text); }catch(err){ showToast('Invalid backup file'); restoreInput.value=''; return; }
+  const records = Array.isArray(parsed) ? parsed : parsed.records;
+  if(!Array.isArray(records)){ showToast('Backup file has no recognizable records'); restoreInput.value=''; return; }
+  const hasAttachments = records.some(r=>r.attachmentsData && Object.keys(r.attachmentsData).length>0);
+  const ok = await showConfirm('Restore from backup', `Restore ${records.length} record(s) from this backup${hasAttachments?', including attached files,':''}? This will REPLACE all ${staff.length} record(s) currently in the register.`, 'Restore');
+  if(!ok){ restoreInput.value=''; return; }
+  for(const old of staff){ await deleteRecordStorage(old.id); }
+  showToast('Restoring…');
+  staff=[];
+  let failedRecords=0, failedAttachments=0;
+  for(const r of records){
+    const rec={...r};
+    const attachmentsData=rec.attachmentsData;
+    delete rec.attachmentsData;
+    if(!rec.id) rec.id=uid();
+    staff.push(rec);
+    const recOk = await saveRecord(rec);
+    if(!recOk){ failedRecords++; continue; }
+    if(attachmentsData){
+      for(const [slot,base64] of Object.entries(attachmentsData)){
+        try{ const ok2=await storeSet(attachKey(rec.id, slot), base64); if(!ok2) failedAttachments++; }
+        catch(e){ failedAttachments++; }
+      }
+    }
+  }
+  const idxOk = await saveIndex();
+  renderAll();
+  restoreInput.value='';
+  if(!idxOk || failedRecords>0){
+    showToast(`Restore incomplete: ${failedRecords} record(s) and the index may not have saved. Reload the page and check before continuing.`);
+  } else if(failedAttachments>0){
+    showToast(`Restored ${staff.length} record(s), but ${failedAttachments} attachment(s) failed to save.`);
+  } else {
+    showToast(`Restored ${staff.length} record(s)`);
+  }
+});
+
+/* ============ DASHBOARD ============ */
+function destroyCharts(){
+  Object.values(charts).forEach(c=>c && c.destroy());
+  charts={};
+}
+function countBy(key, list){
+  const m={};
+  (list||activeStaff()).forEach(s=>{
+    const v=s[key] || 'Not specified';
+    m[v]=(m[v]||0)+1;
+  });
+  return m;
+}
+function chartColors(n){
+  const palette=['#0f2c4c','#c9a961','#1c4370','#8a3c30','#2f6b52','#5a6472','#dcbf7c','#4a6fa5','#a6402f','#7d9a8a'];
+  const out=[];
+  for(let i=0;i<n;i++) out.push(palette[i%palette.length]);
+  return out;
+}
+function renderBreakdownList(containerId, counts, total){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  el.innerHTML = entries.map(([label,count])=>{
+    const pct = total ? Math.round(count/total*100) : 0;
+    return `<div class="breakdown-row"><span class="bd-label">${esc(label)}</span><span class="bd-val">${count} (${pct}%)</span></div>`;
+  }).join('');
+}
+function unitCategory(unitName){
+  if(ORG_UNITS['Directorates'].includes(unitName)) return 'Directorate';
+  if(ORG_UNITS['Agencies'].includes(unitName)) return 'Agency';
+  return 'Other';
+}
+function renderStatCards(){
+  const list=activeStaff();
+  const total=list.length;
+  const female=list.filter(s=>s.sex==='Female').length;
+  const male=list.filter(s=>s.sex==='Male').length;
+  const unitsUsed=new Set(list.map(s=>s.unit).filter(Boolean));
+  const directorateCount=[...unitsUsed].filter(u=>unitCategory(u)==='Directorate').length;
+  const agencyCount=[...unitsUsed].filter(u=>unitCategory(u)==='Agency').length;
+  const otherCount=[...unitsUsed].filter(u=>unitCategory(u)==='Other').length;
+  const permanent=list.filter(s=>s.status==='Full-Time').length;
+  const quarantinedCount=quarantinedStaff().length;
+  document.getElementById('headcountBadge').textContent=total;
+  document.getElementById('statRow').innerHTML=`
+    <div class="stat-card"><span class="val">${total}</span><span class="lbl">Total staff</span></div>
+    <div class="stat-card"><span class="val">${directorateCount} / ${agencyCount}</span><span class="lbl">Directorates / Agencies${otherCount?' (+'+otherCount+' other)':''}</span></div>
+    <div class="stat-card"><span class="val">${male} / ${female}</span><span class="lbl">Male / Female</span></div>
+    <div class="stat-card"><span class="val">${total? Math.round(female/total*100):0}%</span><span class="lbl">Female representation</span></div>
+    <div class="stat-card"><span class="val">${permanent}</span><span class="lbl">Full-Time staff</span></div>
+    ${quarantinedCount? `<div class="stat-card" style="border-top-color:var(--danger);"><span class="val">${quarantinedCount}</span><span class="lbl">In quarantine (posted out)</span></div>` : ''}
+  `;
+}
+function renderDashboard(){
+  renderStatCards();
+  destroyCharts();
+  const emptyLists = ['breakdownUnit','breakdownSex','breakdownCategory','breakdownProfCategory'];
+  const list=activeStaff();
+  if(list.length===0){
+    ['chartByUnit','chartBySex','chartByCategory','chartByProfCategory','chartByGrade','chartByStatus','chartByAge','chartByTenure','chartByPostingYear'].forEach(id=>{
+      const ctx=document.getElementById(id);
+      ctx.getContext('2d').clearRect(0,0,ctx.width,ctx.height);
+    });
+    emptyLists.forEach(id=>document.getElementById(id).innerHTML='');
+    document.getElementById('retirementList').innerHTML='No records yet. Add staff or import an Excel file to see analysis.';
+    document.getElementById('birthdayList').innerHTML='No records yet. Add staff or import an Excel file to see analysis.';
+    return;
+  }
+  const total=list.length;
+
+  const byUnit=countBy('unit',list);
+  charts.unit = new Chart(document.getElementById('chartByUnit'),{
+    type:'bar',
+    data:{labels:Object.keys(byUnit), datasets:[{data:Object.values(byUnit), backgroundColor:'#0f2c4c'}]},
+    options:{indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+  renderBreakdownList('breakdownUnit', byUnit, total);
+
+  const bySex=countBy('sex',list);
+  charts.sex = new Chart(document.getElementById('chartBySex'),{
+    type:'doughnut',
+    data:{labels:Object.keys(bySex), datasets:[{data:Object.values(bySex), backgroundColor:chartColors(Object.keys(bySex).length)}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+  renderBreakdownList('breakdownSex', bySex, total);
+
+  const byCategory=countBy('category',list);
+  charts.category = new Chart(document.getElementById('chartByCategory'),{
+    type:'doughnut',
+    data:{labels:Object.keys(byCategory), datasets:[{data:Object.values(byCategory), backgroundColor:chartColors(Object.keys(byCategory).length)}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+  renderBreakdownList('breakdownCategory', byCategory, total);
+
+  const byProfCategory=countBy('profCategory',list);
+  charts.profCategory = new Chart(document.getElementById('chartByProfCategory'),{
+    type:'doughnut',
+    data:{labels:Object.keys(byProfCategory), datasets:[{data:Object.values(byProfCategory), backgroundColor:chartColors(Object.keys(byProfCategory).length)}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+  renderBreakdownList('breakdownProfCategory', byProfCategory, total);
+
+  const byGrade=countBy('grade',list);
+  charts.grade = new Chart(document.getElementById('chartByGrade'),{
+    type:'bar',
+    data:{labels:Object.keys(byGrade), datasets:[{data:Object.values(byGrade), backgroundColor:'#c9a961'}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  const byStatus=countBy('status',list);
+  charts.status = new Chart(document.getElementById('chartByStatus'),{
+    type:'pie',
+    data:{labels:Object.keys(byStatus), datasets:[{data:Object.values(byStatus), backgroundColor:chartColors(Object.keys(byStatus).length)}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+
+  // age distribution
+  const now0=new Date();
+  const ageBuckets={'<25':0,'25–34':0,'35–44':0,'45–54':0,'55–60':0,'60+':0,'Unknown':0};
+  list.forEach(s=>{
+    if(!s.dob){ ageBuckets['Unknown']++; return; }
+    const dob=new Date(s.dob);
+    if(isNaN(dob)){ ageBuckets['Unknown']++; return; }
+    const age=(now0-dob)/(1000*60*60*24*365.25);
+    if(age<25) ageBuckets['<25']++;
+    else if(age<35) ageBuckets['25–34']++;
+    else if(age<45) ageBuckets['35–44']++;
+    else if(age<55) ageBuckets['45–54']++;
+    else if(age<=60) ageBuckets['55–60']++;
+    else ageBuckets['60+']++;
+  });
+  charts.age = new Chart(document.getElementById('chartByAge'),{
+    type:'bar',
+    data:{labels:Object.keys(ageBuckets), datasets:[{data:Object.values(ageBuckets), backgroundColor:'#1c4370'}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  // years of service distribution — based on date posted to the Ministry
+  const tenureBuckets={'<1 yr':0,'1–5 yrs':0,'6–10 yrs':0,'11–20 yrs':0,'20+ yrs':0,'Unknown':0};
+  list.forEach(s=>{
+    const yrs=yearsOfService(s);
+    if(yrs===null){ tenureBuckets['Unknown']++; return; }
+    if(yrs<1) tenureBuckets['<1 yr']++;
+    else if(yrs<=5) tenureBuckets['1–5 yrs']++;
+    else if(yrs<=10) tenureBuckets['6–10 yrs']++;
+    else if(yrs<=20) tenureBuckets['11–20 yrs']++;
+    else tenureBuckets['20+ yrs']++;
+  });
+  charts.tenure = new Chart(document.getElementById('chartByTenure'),{
+    type:'bar',
+    data:{labels:Object.keys(tenureBuckets), datasets:[{data:Object.values(tenureBuckets), backgroundColor:'#2f6b52'}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  const byYear={};
+  list.forEach(s=>{
+    if(s.datePosted){
+      const y=new Date(s.datePosted).getFullYear();
+      if(!isNaN(y)) byYear[y]=(byYear[y]||0)+1;
+    }
+  });
+  const years=Object.keys(byYear).sort();
+  charts.postYear = new Chart(document.getElementById('chartByPostingYear'),{
+    type:'line',
+    data:{labels:years, datasets:[{label:'Staff posted', data:years.map(y=>byYear[y]), borderColor:'#0f2c4c', backgroundColor:'rgba(15,44,76,.12)', fill:true, tension:.25}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  // retirement alert — Ghana civil service retirement age 60
+  const now=new Date();
+  const dueSoon = list.filter(s=>{
+    if(!s.dob) return false;
+    const dob=new Date(s.dob);
+    if(isNaN(dob)) return false;
+    const retireDate=new Date(dob); retireDate.setFullYear(dob.getFullYear()+60);
+    const monthsAway=(retireDate-now)/(1000*60*60*24*30.44);
+    return monthsAway>=0 && monthsAway<=24;
+  }).sort((a,b)=>new Date(a.dob)-new Date(b.dob));
+  const listEl=document.getElementById('retirementList');
+  if(dueSoon.length===0){
+    listEl.textContent='No date of birth data available, or none due.';
+  } else {
+    listEl.innerHTML='<ul>'+dueSoon.map(s=>{
+      const dob=new Date(s.dob);
+      const retireDate=new Date(dob); retireDate.setFullYear(dob.getFullYear()+60);
+      return `<li>${esc(fullName(s))} — ${esc(s.unit)} — retires ${fmtDate(retireDate.toISOString().slice(0,10))}</li>`;
+    }).join('')+'</ul>';
+  }
+
+  // birthday alert — upcoming birthdays within the next 30 days (month/day only, year-agnostic)
+  const msDay=1000*60*60*24;
+  const todayMidnight=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const upcoming = list.map(s=>{
+    if(!s.dob) return null;
+    const dob=new Date(s.dob);
+    if(isNaN(dob)) return null;
+    let nextBday=new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+    if(nextBday<todayMidnight) nextBday=new Date(now.getFullYear()+1, dob.getMonth(), dob.getDate());
+    const daysAway=Math.round((nextBday-todayMidnight)/msDay);
+    return {s, nextBday, daysAway};
+  }).filter(x=>x && x.daysAway>=0 && x.daysAway<=30)
+    .sort((a,b)=>a.daysAway-b.daysAway);
+  const bdayEl=document.getElementById('birthdayList');
+  if(upcoming.length===0){
+    bdayEl.textContent='No date of birth data available, or none upcoming.';
+  } else {
+    bdayEl.innerHTML='<ul>'+upcoming.map(x=>{
+      const when = x.daysAway===0 ? 'today' : x.daysAway===1 ? 'tomorrow' : `in ${x.daysAway} days`;
+      const hasEmail = !!(x.s.email && x.s.email.trim());
+      return `<li>${esc(fullName(x.s))} — ${esc(x.s.unit)} — ${fmtDate(x.nextBday.toISOString().slice(0,10))} (${when})
+        <button type="button" class="btn gold small" data-bday-id="${x.s.id}" style="margin-left:8px;">${hasEmail?'Send greeting':'Copy greeting'}</button>
+      </li>`;
+    }).join('')+'</ul>';
+    bdayEl.querySelectorAll('button[data-bday-id]').forEach(btn=>{
+      btn.addEventListener('click', ()=>sendBirthdayGreeting(btn.dataset.bdayId));
+    });
+  }
+}
+
+function buildBirthdayMessage(s){
+  const first = s.firstName || fullName(s).split(' ')[0] || 'Colleague';
+  const subject='Happy Birthday from MoCDTI!';
+  const body=`Dear ${first},\n\nOn behalf of the Ministry of Communication, Digital Technology and Innovations, we wish you a very happy birthday and a wonderful year ahead.\n\nWarm regards,\nMoCDTI Management`;
+  return {subject, body};
+}
+function sendBirthdayGreeting(id){
+  const s=staff.find(x=>x.id===id);
+  if(!s) return;
+  const {subject, body}=buildBirthdayMessage(s);
+  if(s.email && s.email.trim()){
+    window.location.href=`mailto:${encodeURIComponent(s.email.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    showToast('Opening your email app…');
+  } else {
+    const text=`Subject: ${subject}\n\n${body}`;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text).then(()=>showToast('No email on file — greeting copied, paste it into a text/WhatsApp message'))
+        .catch(()=>showToast('No email on file for '+fullName(s)));
+    } else {
+      showToast('No email on file for '+fullName(s));
+    }
+  }
+}
+
+/* ============ IMPORT ============ */
+const dropZone=document.getElementById('dropZone');
+const fileInput=document.getElementById('fileInput');
+document.getElementById('btnChooseFile').addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
+['dragenter','dragover'].forEach(ev=>dropZone.addEventListener(ev,e=>{e.preventDefault();dropZone.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>dropZone.addEventListener(ev,e=>{e.preventDefault();dropZone.classList.remove('drag');}));
+dropZone.addEventListener('drop',e=>{ if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+function guessTarget(header){
+  const h=header.toString().trim().toLowerCase();
+  for(const [key,variants] of Object.entries(HEADER_GUESSES)){
+    if(variants.includes(h)) return key;
+  }
+  // partial match fallback
+  for(const [key,variants] of Object.entries(HEADER_GUESSES)){
+    if(variants.some(v=>h.includes(v))) return key;
+  }
+  return '';
+}
+
+function excelDateToISO(val){
+  if(val===undefined||val===null||val==='') return '';
+  if(typeof val==='number'){
+    const d = XLSX.SSF? XLSX.SSF.parse_date_code(val): null;
+    if(d) return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+  }
+  const dt=new Date(val);
+  if(!isNaN(dt)) return dt.toISOString().slice(0,10);
+  return String(val);
+}
+
+function handleFile(file){
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array', cellDates:false});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:true, defval:''});
+      if(rows.length<2){ showToast('No data rows found in file'); return; }
+      const headers = rows[0];
+      const dataRows = rows.slice(1).filter(r=>r.some(c=>c!==''));
+      pendingImportRows = {headers, dataRows};
+      renderMapping(headers);
+    }catch(err){
+      showToast('Could not read file — check it is a valid Excel/CSV');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderMapping(headers){
+  const area=document.getElementById('mappingArea');
+  const optionsHtml = FIELD_MAP_TARGETS.map(t=>`<option value="${t.key}">${t.label}</option>`).join('');
+  area.innerHTML = `
+    <div class="import-log" style="margin-top:18px;">
+      <strong>Map your columns</strong>
+      <table class="mapping-table">
+        <thead><tr><th>Column in file</th><th>Maps to</th></tr></thead>
+        <tbody>
+          ${headers.map((h,i)=>`
+            <tr>
+              <td>${esc(h||'(column '+(i+1)+')')}</td>
+              <td><select data-col="${i}">${optionsHtml}</select></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top:14px;display:flex;gap:10px;">
+        <button class="btn gold" id="btnDoImport">Import records</button>
+        <button class="btn secondary" id="btnCancelImport">Cancel</button>
+      </div>
+    </div>
+  `;
+  headers.forEach((h,i)=>{
+    const sel=area.querySelector(`select[data-col="${i}"]`);
+    sel.value = guessTarget(h||'');
+  });
+  document.getElementById('btnDoImport').addEventListener('click', doImport);
+  document.getElementById('btnCancelImport').addEventListener('click', ()=>{
+    pendingImportRows=null;
+    area.innerHTML='';
+    fileInput.value='';
+  });
+}
+
+async function doImport(){
+  if(!pendingImportRows) return;
+  const area=document.getElementById('mappingArea');
+  const selects=area.querySelectorAll('select[data-col]');
+  const colMap={}; // colIndex -> targetKey
+  selects.forEach(sel=>{ if(sel.value) colMap[sel.dataset.col]=sel.value; });
+
+  const hasNameCol = Object.values(colMap).includes('name');
+  const hasFirstLast = Object.values(colMap).includes('firstName') && Object.values(colMap).includes('lastName');
+  if(!hasNameCol && !hasFirstLast){
+    showToast('Map either a "Full name" column, or both "First name" and "Last name" columns, to continue');
+    return;
+  }
+
+  const dateFields=new Set(['firstAppointment','currentAppointment','datePosted','dob']);
+  let added=0, skipped=0;
+  const newRecords=[];
+  pendingImportRows.dataRows.forEach(row=>{
+    const rec={id:uid(), attachments:{}};
+    Object.entries(colMap).forEach(([colIdx,key])=>{
+      let val = row[colIdx];
+      if(val===undefined) val='';
+      if(dateFields.has(key)) val=excelDateToISO(val);
+      rec[key]=typeof val==='string'? val.trim(): val;
+    });
+    if(rec.name && !rec.firstName && !rec.lastName){
+      const split=splitName(rec.name);
+      rec.firstName=split.firstName; rec.middleName=split.middleName; rec.lastName=split.lastName;
+    }
+    rec.name = fullName(rec);
+    if(!rec.name){ skipped++; return; }
+    // normalize sex
+    if(rec.sex){
+      const sv=rec.sex.toString().trim().toLowerCase();
+      if(sv.startsWith('f')) rec.sex='Female';
+      else if(sv.startsWith('m')) rec.sex='Male';
+    }
+    staff.push(rec);
+    newRecords.push(rec);
+    added++;
+  });
+
+  for(const r of newRecords){ await saveRecord(r); }
+  if(newRecords.length) await saveIndex();
+
+  // flag possible duplicates introduced by this import (against the full list, including each other)
+  let dupCount=0;
+  newRecords.forEach(r=>{ if(findPossibleDuplicates(r).length>0) dupCount++; });
+
+  const log=document.getElementById('importLog');
+  log.style.display='block';
+  log.innerHTML = `<strong>Import complete.</strong> ${added} record${added===1?'':'s'} added${skipped?`, ${skipped} row(s) skipped (no name found)`:''}.`
+    + (dupCount>0 ? `<br><span style="color:var(--danger);">${dupCount} of the imported record${dupCount===1?'':'s'} may be duplicate${dupCount===1?'':'s'} of existing entries (matching Staff/SSNIT number, or matching name + date of birth, or matching name + directorate/agency) — check the Staff Records tab before relying on the counts.</span>` : '');
+  area.innerHTML='';
+  fileInput.value='';
+  pendingImportRows=null;
+  renderAll();
+  showToast(`Imported ${added} record${added===1?'':'s'}`);
+}
+
+/* ============ ATTACHMENTS ============ */
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result);
+    r.onerror=()=>reject(new Error('read failed'));
+    r.readAsDataURL(file);
+  });
+}
+
+function renderAttachmentsSection(id){
+  const rec = staff.find(s=>s.id===id);
+  if(!rec) return;
+  const list=document.getElementById('attachmentsList');
+  const slotsToShow = ATTACHMENT_SLOTS.filter(slot=>slot.key!=='passportPhoto');
+  list.innerHTML = slotsToShow.map(slot=>{
+    const meta = rec.attachments && rec.attachments[slot.key];
+    const isImage = meta && meta.mime && meta.mime.startsWith('image/');
+    return `
+    <div class="attach-row" data-slot="${slot.key}">
+      ${isImage ? `<img class="attach-thumb" id="thumb-${slot.key}" alt="">` : ''}
+      <span class="attach-label">${esc(slot.label)}</span>
+      <span class="attach-status">${meta ? esc(meta.filename)+' · '+fmtBytes(meta.size) : 'No file attached'}</span>
+      <input type="file" style="display:none" data-slot="${slot.key}" accept="${slot.accept}">
+      <button class="btn secondary small" data-action="upload" data-slot="${slot.key}">${meta?'Replace':'Upload'}</button>
+      ${meta ? `<button class="btn secondary small" data-action="view" data-slot="${slot.key}">View</button>` : ''}
+      ${meta ? `<button class="btn danger small" data-action="delete" data-slot="${slot.key}">Delete</button>` : ''}
+    </div>`;
+  }).join('');
+
+  // wire up thumbnails for image attachments
+  slotsToShow.forEach(slot=>{
+    const meta = rec.attachments && rec.attachments[slot.key];
+    if(meta && meta.mime && meta.mime.startsWith('image/')){
+      storeGet(attachKey(id,slot.key)).then(res=>{
+        const img=document.getElementById(`thumb-${slot.key}`);
+        if(img && res && res.value) img.src=res.value;
+      }).catch(()=>{});
+    }
+  });
+
+  list.querySelectorAll('input[type="file"]').forEach(inp=>{
+    inp.addEventListener('change', async e=>{
+      const file=e.target.files[0];
+      if(!file) return;
+      await handleAttachmentUpload(id, inp.dataset.slot, file);
+      e.target.value='';
+    });
+  });
+  list.querySelectorAll('button[data-action="upload"]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      list.querySelector(`input[type="file"][data-slot="${btn.dataset.slot}"]`).click();
+    });
+  });
+  list.querySelectorAll('button[data-action="view"]').forEach(btn=>{
+    btn.addEventListener('click',()=>viewAttachment(id, btn.dataset.slot));
+  });
+  list.querySelectorAll('button[data-action="delete"]').forEach(btn=>{
+    btn.addEventListener('click',()=>deleteAttachment(id, btn.dataset.slot));
+  });
+}
+
+/* ============ PASSPORT PHOTO BOX (on the form itself) ============ */
+async function renderPhotoBox(id){
+  const img=document.getElementById('photoBoxImg');
+  const placeholder=document.getElementById('photoBoxPlaceholder');
+  const removeBtn=document.getElementById('photoBoxRemoveBtn');
+  const uploadBtn=document.getElementById('photoBoxBtn');
+  const hint=document.getElementById('photoBoxHint');
+  img.style.display='none';
+  img.src='';
+  placeholder.style.display='flex';
+  removeBtn.style.display='none';
+
+  if(!id){
+    uploadBtn.disabled=true;
+    hint.textContent='Save the record first to add a photo.';
+    return;
+  }
+  uploadBtn.disabled=false;
+  hint.textContent='';
+  const rec = staff.find(s=>s.id===id);
+  const meta = rec && rec.attachments && rec.attachments.passportPhoto;
+  if(!meta) return;
+  try{
+    const res = await storeGet(attachKey(id,'passportPhoto'));
+    if(res && res.value){
+      img.src=res.value;
+      img.style.display='block';
+      placeholder.style.display='none';
+      removeBtn.style.display='block';
+    }
+  }catch(e){ /* leave placeholder showing */ }
+}
+document.getElementById('photoBoxBtn').addEventListener('click',()=>{
+  document.getElementById('photoBoxInput').click();
+});
+document.getElementById('photoBoxInput').addEventListener('change', async e=>{
+  const file=e.target.files[0];
+  e.target.value='';
+  if(!file) return;
+  const id=document.getElementById('editId').value;
+  if(!id){ showToast('Save the record first to add a photo'); return; }
+  await handleAttachmentUpload(id, 'passportPhoto', file);
+  await renderPhotoBox(id);
+});
+document.getElementById('photoBoxRemoveBtn').addEventListener('click', async ()=>{
+  const id=document.getElementById('editId').value;
+  if(!id) return;
+  await deleteAttachment(id, 'passportPhoto');
+  await renderPhotoBox(id);
+});
+
+async function handleAttachmentUpload(id, slot, file){
+  if(file.size > MAX_ATTACHMENT_BYTES){
+    showToast(`"${file.name}" is too large — please use a file under ${fmtBytes(MAX_ATTACHMENT_BYTES)}`);
+    return;
+  }
+  showToast('Uploading…');
+  let base64;
+  try{
+    base64 = await fileToBase64(file);
+  }catch(e){
+    showToast('Could not read that file'); return;
+  }
+  try{
+    const res = await storeSet(attachKey(id, slot), base64);
+    if(!res){ showToast('Could not save the attachment — storage error'); return; }
+  }catch(e){
+    showToast('Could not save the attachment — storage error'); return;
+  }
+  const rec = staff.find(s=>s.id===id);
+  if(!rec.attachments) rec.attachments={};
+  rec.attachments[slot] = {filename:file.name, size:file.size, mime:file.type, uploadedAt:new Date().toISOString()};
+  const ok = await saveRecord(rec);
+  if(ok){
+    showToast('Attachment saved');
+    renderAttachmentsSection(id);
+  }
+}
+
+async function viewAttachment(id, slot){
+  try{
+    const res = await storeGet(attachKey(id, slot));
+    if(!res || !res.value){ showToast('Attachment not found in storage'); return; }
+    const rec = staff.find(s=>s.id===id);
+    const meta = rec.attachments && rec.attachments[slot];
+    const a=document.createElement('a');
+    a.href=res.value;
+    a.target='_blank';
+    a.download=meta ? meta.filename : 'attachment';
+    a.click();
+  }catch(e){
+    showToast('Could not retrieve the attachment');
+  }
+}
+
+async function deleteAttachment(id, slot){
+  try{ await storeDelete(attachKey(id, slot)); }catch(e){}
+  const rec = staff.find(s=>s.id===id);
+  if(rec && rec.attachments) delete rec.attachments[slot];
+  await saveRecord(rec);
+  showToast('Attachment removed');
+  renderAttachmentsSection(id);
+}
+
+/* ============ AI ANALYSIS REPORT ============ */
+function mdToHtml(text){
+  const lines=text.split('\n');
+  let html='', inList=false;
+  lines.forEach(raw=>{
+    let line=raw.trim();
+    if(!line){ if(inList){html+='</ul>';inList=false;} return; }
+    line=line.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    if(/^#{1,3}\s+/.test(line)){
+      if(inList){html+='</ul>';inList=false;}
+      html+=`<h4>${line.replace(/^#{1,3}\s+/,'')}</h4>`;
+    } else if(/^[-•]\s+/.test(line)){
+      if(!inList){html+='<ul>';inList=true;}
+      html+=`<li>${line.replace(/^[-•]\s+/,'')}</li>`;
+    } else {
+      if(inList){html+='</ul>';inList=false;}
+      html+=`<p>${line}</p>`;
+    }
+  });
+  if(inList) html+='</ul>';
+  return html;
+}
+
+function buildAggregateStats(){
+  const list=activeStaff();
+  const total=list.length;
+  const now=new Date();
+  const tenureYears=list.map(s=>yearsOfService(s)).filter(v=>v!==null);
+  const avgTenure = tenureYears.length ? (tenureYears.reduce((a,b)=>a+b,0)/tenureYears.length) : null;
+  const retirementDue = list.filter(s=>{
+    if(!s.dob) return false;
+    const dob=new Date(s.dob); if(isNaN(dob)) return false;
+    const retireDate=new Date(dob); retireDate.setFullYear(dob.getFullYear()+60);
+    const monthsAway=(retireDate-now)/(1000*60*60*24*30.44);
+    return monthsAway>=0 && monthsAway<=24;
+  }).length;
+  return {
+    totalStaff: total,
+    quarantinedStaffCount: quarantinedStaff().length,
+    countByDirectorateAgency: countBy('unit',list),
+    countBySex: countBy('sex',list),
+    countByStaffCategory: countBy('category',list),
+    countByProfessionalCategory: countBy('profCategory',list),
+    countByGrade: countBy('grade',list),
+    countByEmploymentStatus: countBy('status',list),
+    averageYearsAtCurrentOrganisation: avgTenure ? Math.round(avgTenure*10)/10 : null,
+    staffDueForRetirementWithin24Months: retirementDue
+  };
+}
+
+/* Generates a ready-to-paste analysis prompt instead of calling the Anthropic API
+   directly — this tool runs as an offline downloaded file, and a browser fetch to
+   api.anthropic.com from a local file has no way to authenticate and will fail
+   ("Failed to fetch"). Pasting this into Claude (claude.ai) or another AI assistant
+   gives the same analysis without needing network access baked into the file. */
+function buildReportPrompt(stats){
+  return `You are a workforce planning analyst for a Ghanaian government ministry. Based only on the aggregate statistics below (no individual names are included), write a concise staff establishment analysis report for the Ministry's management.
+
+Aggregate data (JSON):
+${JSON.stringify(stats,null,2)}
+
+Structure your response with these section headings, each on its own line starting with "##":
+## Executive Summary
+## Gender Balance
+## Staff Category (Senior/Junior) and Professional/Sub-Professional Mix
+## Grade and Directorate/Agency Distribution
+## Succession and Retirement Risk
+## Recommendations
+
+Use short paragraphs and bullet points ("- ") where useful. Be specific with the numbers provided. Do not invent data not present above. Keep the whole report under 350 words. Do not use markdown tables.`;
+}
+
+/* ============ AI API KEY (optional, local-only) ============ */
+const AI_KEY_STORAGE = 'mocdti-anthropic-api-key';
+document.getElementById('aiKeyToggle').addEventListener('click', async ()=>{
+  const panel=document.getElementById('aiKeyPanel');
+  const opening = panel.style.display==='none';
+  panel.style.display = opening ? 'block':'none';
+  if(opening) await refreshAiKeyStatus();
+});
+async function refreshAiKeyStatus(){
+  const statusEl=document.getElementById('aiKeyStatus');
+  try{
+    const res=await storeGet(AI_KEY_STORAGE);
+    if(res && res.value){
+      statusEl.textContent='A key is saved — reports will generate automatically when you\'re online.';
+      document.getElementById('aiApiKeyInput').value='';
+      document.getElementById('aiApiKeyInput').placeholder='sk-ant-… (a key is already saved)';
+    } else {
+      statusEl.textContent='No key saved — "Generate report" will prepare a copy-paste prompt instead.';
+      document.getElementById('aiApiKeyInput').placeholder='sk-ant-…';
+    }
+  }catch(e){
+    statusEl.textContent='';
+  }
+}
+document.getElementById('btnSaveApiKey').addEventListener('click', async ()=>{
+  const val=document.getElementById('aiApiKeyInput').value.trim();
+  if(!val){ showToast('Enter a key first'); return; }
+  try{
+    await storeSet(AI_KEY_STORAGE, val);
+    showToast('API key saved to this browser');
+    await refreshAiKeyStatus();
+  }catch(e){
+    showToast('Could not save the key — storage error');
+  }
+});
+document.getElementById('btnClearApiKey').addEventListener('click', async ()=>{
+  try{
+    await storeDelete(AI_KEY_STORAGE);
+    showToast('API key removed');
+    await refreshAiKeyStatus();
+  }catch(e){
+    showToast('Could not remove the key — storage error');
+  }
+});
+
+async function callAnthropicDirect(apiKey, prompt){
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key": apiKey,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body: JSON.stringify({
+      model:"claude-sonnet-5",
+      max_tokens:1200,
+      messages:[{role:"user", content: prompt}]
+    })
+  });
+  let data;
+  try{ data = await response.json(); }catch(e){ throw new Error('The server returned an unreadable response'); }
+  if(!response.ok){
+    const msg=(data && data.error && data.error.message) ? data.error.message : `Request failed (HTTP ${response.status})`;
+    throw new Error(msg);
+  }
+  const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  if(!text) throw new Error('The response did not contain any report text');
+  return text;
+}
+
+function renderAiCharts(stats){
+  if(charts.aiUnit) charts.aiUnit.destroy();
+  if(charts.aiGrade) charts.aiGrade.destroy();
+  const byUnit=stats.countByDirectorateAgency, byGrade=stats.countByGrade;
+  charts.aiUnit = new Chart(document.getElementById('aiChartUnit'),{
+    type:'bar',
+    data:{labels:Object.keys(byUnit), datasets:[{data:Object.values(byUnit), backgroundColor:'#0f2c4c'}]},
+    options:{indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+  charts.aiGrade = new Chart(document.getElementById('aiChartGrade'),{
+    type:'bar',
+    data:{labels:Object.keys(byGrade), datasets:[{data:Object.values(byGrade), backgroundColor:'#c9a961'}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+}
+
+function renderPromptFallback(area, stats, prompt, note){
+  const generated=new Date().toLocaleString('en-GB');
+  area.innerHTML = `
+    <div class="ai-report">
+      <div class="meta">Prepared ${esc(generated)} &middot; based on ${stats.totalStaff} staff record(s)</div>
+      ${note ? `<p style="color:var(--danger);">${esc(note)}</p>` : ''}
+      <p>Copy the prompt below (built from your current data — no names included) and paste it into Claude
+      (<a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>) or another AI assistant to generate the analysis.</p>
+      <textarea id="aiPromptText" readonly style="width:100%;min-height:220px;font-family:'Source Sans 3',sans-serif;font-size:12.5px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:#faf9f5;color:var(--ink);">${esc(prompt)}</textarea>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn gold" id="btnCopyPrompt">Copy prompt</button>
+        <button class="btn secondary" id="btnDownloadPrompt">Download as text file</button>
+        <button class="btn secondary" id="btnRefreshPrompt">Try again</button>
+      </div>
+    </div>
+    <div class="ai-charts">
+      <div class="chart-card"><h3>Directorate / Agency Distribution</h3><canvas id="aiChartUnit"></canvas></div>
+      <div class="chart-card"><h3>Grade Distribution</h3><canvas id="aiChartGrade"></canvas></div>
+    </div>
+  `;
+  document.getElementById('btnCopyPrompt').addEventListener('click', async ()=>{
+    const ta=document.getElementById('aiPromptText');
+    try{
+      await navigator.clipboard.writeText(ta.value);
+      showToast('Prompt copied to clipboard');
+    }catch(e){
+      ta.select();
+      document.execCommand('copy');
+      showToast('Prompt copied to clipboard');
+    }
+  });
+  document.getElementById('btnDownloadPrompt').addEventListener('click', ()=>{
+    const blob=new Blob([prompt],{type:'text/plain'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='MoCDTI_Staff_Analysis_Prompt.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  document.getElementById('btnRefreshPrompt').addEventListener('click', generateAIReport);
+  renderAiCharts(stats);
+}
+
+async function generateAIReport(){
+  const area=document.getElementById('aiReportArea');
+  if(staff.length===0){
+    area.innerHTML='<div class="ai-report"><p style="color:var(--slate);">Add or import staff records first — the report needs data to analyze.</p></div>';
+    return;
+  }
+  const stats=buildAggregateStats();
+  const prompt=buildReportPrompt(stats);
+
+  let savedKey=null;
+  try{
+    const res=await storeGet(AI_KEY_STORAGE);
+    if(res && res.value) savedKey=res.value;
+  }catch(e){ /* no key saved */ }
+
+  if(!savedKey){
+    renderPromptFallback(area, stats, prompt);
+    return;
+  }
+
+  area.innerHTML='<div class="ai-loading">Analyzing establishment data…</div>';
+  try{
+    const text = await callAnthropicDirect(savedKey, prompt);
+    const generated=new Date().toLocaleString('en-GB');
+    area.innerHTML = `
+      <div class="ai-report">
+        <div class="meta">Generated ${esc(generated)} &middot; based on ${stats.totalStaff} staff record(s)</div>
+        ${mdToHtml(text)}
+      </div>
+      <div class="ai-charts">
+        <div class="chart-card"><h3>Directorate / Agency Distribution</h3><canvas id="aiChartUnit"></canvas></div>
+        <div class="chart-card"><h3>Grade Distribution</h3><canvas id="aiChartGrade"></canvas></div>
+      </div>
+    `;
+    renderAiCharts(stats);
+  }catch(err){
+    console.error('Direct AI report generation failed:', err);
+    renderPromptFallback(area, stats, prompt, `Could not reach the AI service directly (${err.message||'unknown error'}) — check your internet connection and saved key. Using the manual option instead:`);
+  }
+}
+document.getElementById('btnGenerateReport').addEventListener('click', generateAIReport);
+
+/* ============ INIT ============ */
+function renderAll(){
+  refreshFilterOptions();
+  renderTable();
+  renderDashboard();
+}
+function checkStorageAvailable(){
+  if(!window.indexedDB){
+    document.body.insertAdjacentHTML('afterbegin', `<div style="background:#a6402f;color:#fff;padding:12px 24px;font-size:13px;text-align:center;position:relative;z-index:1000;">
+      <strong>Saving is unavailable in this browser.</strong> This register needs IndexedDB support to save data locally.
+      Please open this file in a recent version of Chrome, Edge, or Firefox. Entries made in this session will be lost when you close it.
+    </div>`);
+    return false;
+  }
+  return true;
+}
+
+/* ============ USER ACCOUNTS & AUDIT (HR/Admin) ============ */
+function showTempPw(email,pw){
+  const b=document.getElementById('tempPwBox');
+  b.innerHTML=`Account: <b>${esc(email)}</b><br>Temporary password: <code style="font-size:15px;user-select:all;">${esc(pw)}</code><br><span style="color:var(--slate);">Shown once only. Give it to the officer securely; they must choose their own password at first sign-in.</span>`;
+  b.style.display='block';
+}
+async function loadUsers(){
+  const r=await api('GET','/api/users'); if(!r.ok) return;
+  const list=await r.json();
+  document.querySelector('#usersTable tbody').innerHTML=list.map(x=>{
+    const self=x.email===ME.email;
+    return `<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td>
+      <td><select onchange="setUserRole(${x.id},this.value)" ${self?'disabled':''}>${Object.entries(ROLE_LABELS).map(([k,v])=>`<option value="${k}" ${x.role===k?'selected':''}>${v}</option>`).join('')}</select></td>
+      <td>${x.active?'Active':'<b style="color:var(--danger)">Disabled</b>'}${x.must_change?' <span style="color:var(--slate)">(temporary password)</span>':''}</td>
+      <td>${self?'':`<button class="btn small secondary" onclick="resetUserPw(${x.id})">Reset password</button> <button class="btn small ${x.active?'danger':'secondary'}" onclick="toggleUser(${x.id},${!x.active})">${x.active?'Disable':'Enable'}</button>`}</td></tr>`;
+  }).join('');
+}
+async function loadAudit(){
+  const r=await api('GET','/api/audit'); if(!r.ok) return;
+  const list=await r.json();
+  document.querySelector('#auditTable tbody').innerHTML=list.map(a=>`<tr><td style="white-space:nowrap">${esc(new Date(a.at).toLocaleString())}</td><td>${esc(a.user)}</td><td>${esc(a.action)}</td><td>${esc(a.entity)}${a.entity_id?' #'+a.entity_id:''}</td><td style="max-width:420px;word-break:break-word;">${esc((a.detail||'').slice(0,300))}</td></tr>`).join('');
+}
+document.getElementById('btnCreateUser').addEventListener('click', async ()=>{
+  const body={name:document.getElementById('nuName').value, email:document.getElementById('nuEmail').value, role:document.getElementById('nuRole').value};
+  const r=await api('POST','/api/users',body); const j=await r.json().catch(()=>({}));
+  if(!r.ok){ showToast(j.error||'Could not create the account'); return; }
+  showTempPw(j.email,j.temp_password);
+  document.getElementById('nuName').value=''; document.getElementById('nuEmail').value='';
+  loadUsers(); loadAudit();
+});
+async function resetUserPw(id){
+  if(!await showConfirm('Reset password','Generate a new temporary password for this officer? Their current password will stop working.','Reset')) return;
+  const r=await api('POST','/api/users/'+id+'/reset'); const j=await r.json().catch(()=>({}));
+  if(!r.ok){ showToast(j.error||'Could not reset'); return; }
+  showTempPw(j.email,j.temp_password); loadUsers(); loadAudit();
+}
+async function setUserRole(id,role){
+  const r=await api('PUT','/api/users/'+id,{role}); showToast(r.ok?'Role updated':'Could not update role'); loadUsers(); loadAudit();
+}
+async function toggleUser(id,active){
+  const r=await api('PUT','/api/users/'+id,{active}); showToast(r.ok?(active?'Account enabled':'Account disabled'):'Could not update account'); loadUsers(); loadAudit();
+}
+document.querySelector('.tab-btn[data-view="users"]').addEventListener('click',()=>{ if(IS_ADMIN){ loadUsers(); loadAudit(); } });
+
+/* ============ SESSION / ROLES ============ */
+(async function boot(){
+  const r=await fetch('/api/me',{credentials:'same-origin'});
+  if(r.status===401){ location.href='/login'; return; }
+  ME=await r.json();
+  IS_ADMIN=ME.role==='admin'; CAN_EDIT=IS_ADMIN||ME.role==='officer';
+  document.body.classList.add('role-'+ME.role);
+  if(CAN_EDIT) document.body.classList.add('can-edit');
+  if(IS_ADMIN) document.body.classList.add('is-admin');
+  document.getElementById('userBarText').textContent=(ME.name||ME.email)+' · '+(ROLE_LABELS[ME.role]||ME.role);
+  loadStaff();
+})();
+</script>
+</body>
+</html>
